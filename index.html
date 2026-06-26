@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing Calculator</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#185fa5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pricing" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f5f3;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 0.5px solid #ddd;
+      padding: 2rem;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #666; margin-bottom: 1.5rem; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+
+    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 15px;
+      border: 0.5px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      background: #fafafa;
+      transition: border-color 0.15s;
+    }
+    input[type="number"]:focus { border-color: #888; background: #fff; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+
+    .toolbar-label { font-size: 13px; color: #555; }
+
+    .seg {
+      display: flex;
+      border: 0.5px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .seg button {
+      padding: 6px 14px;
+      font-size: 13px;
+      border: none;
+      background: #fafafa;
+      cursor: pointer;
+      color: #555;
+      transition: background 0.12s, color 0.12s;
+    }
+    .seg button + button { border-left: 0.5px solid #ccc; }
+    .seg button.active { background: #1a1a1a; color: #fff; }
+
+    .vat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .vat-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .vat-toggle-label { font-size: 13px; color: #555; white-space: nowrap; }
+
+    .switch {
+      width: 40px; height: 22px;
+      border-radius: 11px;
+      background: #ccc;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .switch.on { background: #185fa5; }
+    .switch::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px; left: 3px;
+      transition: left 0.2s;
+    }
+    .switch.on::after { left: 21px; }
+
+    .vat-rate-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .vat-rate-wrap input[type="number"] {
+      width: 62px;
+      padding: 5px 8px;
+      font-size: 13px;
+    }
+    .vat-rate-wrap span { font-size: 13px; color: #555; }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.25rem;
+    }
+
+    .metric {
+      background: #f5f5f3;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .metric-label { font-size: 12px; color: #666; margin-bottom: 6px; line-height: 1.4; }
+    .metric-value { font-size: 22px; font-weight: 500; }
+    .metric-value.blue { color: #185fa5; }
+    .metric-value.green { color: #3b6d11; }
+    .metric-value.muted { color: #888; }
+    .metric-value.red { color: #a32d2d; }
+
+    .msg-error {
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+      line-height: 1.5;
+      background: #fcebeb;
+      color: #a32d2d;
+    }
+
+    .divider { border: none; border-top: 0.5px solid #e8e8e8; margin: 1.25rem 0; }
+
+    .scenarios-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .hide-btn {
+      font-size: 12px;
+      color: #888;
+      background: none;
+      border: 0.5px solid #ccc;
+      border-radius: 6px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+    .hide-btn:hover { background: #f0f0f0; color: #333; }
+
+    .scenarios-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      color: #888;
+      padding: 6px 10px;
+      border-bottom: 0.5px solid #e8e8e8;
+    }
+    td {
+      padding: 7px 10px;
+      border-bottom: 0.5px solid #f0f0f0;
+      color: #333;
+    }
+    tr.current-row td { background: #f0f5ff; font-weight: 500; color: #0c447c; }
+    tr:last-child td { border-bottom: none; }
+    td.disc { color: #185fa5; }
+    td.disc.tight { color: #a32d2d; }
+
+    .explanation {
+      border-top: 0.5px solid #e8e8e8;
+      padding-top: 1rem;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.7;
+    }
+    .explanation strong { color: #1a1a1a; }
+
+    footer {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: #bbb;
+      text-align: center;
+      width: 100%;
+      max-width: 720px;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Pricing Calculator</h1>
+  <p class="subtitle">Margin-based pricing with optional VAT.</p>
+
+  <div class="toolbar">
+    <span class="toolbar-label">Currency:</span>
+    <div class="seg" id="curr-seg">
+      <button class="active" data-curr="LBP">LBP</button>
+      <button data-curr="$">$</button>
+      <button data-curr="€">€</button>
+    </div>
+    <div class="vat-row">
+      <div class="vat-toggle" id="vat-toggle">
+        <div class="switch on" id="vat-switch"></div>
+        <span class="vat-toggle-label">VAT</span>
+      </div>
+      <div class="vat-rate-wrap">
+        <input type="number" id="vat-rate" min="0" max="100" step="0.1" value="11" />
+        <span>%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="inputs">
+    <div>
+      <label for="cost">Cost price</label>
+      <input type="number" id="cost" min="0" step="any" value="100" />
+    </div>
+    <div>
+      <label for="margin">Desired margin %</label>
+      <input type="number" id="margin" min="0" step="any" value="30" />
+    </div>
+    <div>
+      <label for="marked">Marked / full price</label>
+      <input type="number" id="marked" min="0" step="any" value="200" />
+    </div>
+  </div>
+
+  <div class="results">
+    <div class="metric">
+      <div class="metric-label">Min. sale price<br><span id="vat-note" style="font-size:11px;color:#aaa;">(VAT incl.)</span></div>
+      <div class="metric-value blue" id="out-sale">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Max. discount to offer</div>
+      <div class="metric-value blue" id="out-disc">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Your net profit</div>
+      <div class="metric-value green" id="out-profit">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">VAT for gov.</div>
+      <div class="metric-value muted" id="out-vat">—</div>
+    </div>
+  </div>
+
+  <div class="msg-error" id="msg-error"></div>
+
+  <hr class="divider" />
+
+  <div class="scenarios-header">
+    <span class="section-label" style="margin-bottom:0;">Margin scenarios</span>
+    <button class="hide-btn" id="toggle-scenarios">Hide</button>
+  </div>
+  <div id="scenarios-section">
+    <div class="scenarios-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Margin %</th>
+            <th>Min. sale price</th>
+            <th>Max. discount</th>
+            <th>Net profit</th>
+          </tr>
+        </thead>
+        <tbody id="scenarios-body"></tbody>
+      </table>
+    </div>
+    <hr class="divider" />
+  </div>
+
+  <div class="explanation">
+    <strong>How it works:</strong>
+    Target net revenue = cost × (1 + margin%). When VAT is on, the customer price = net × (1 + VAT%) and you remit the VAT to the government.
+    Max discount = how much you can cut from your marked price and still hit your target margin.
+  </div>
+</div>
+
+<footer>Built by Fawzi Atwi &mdash; &copy; 2026</footer>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+
+  let vatOn = true;
+  let currency = 'LBP';
+  let scenariosVisible = true;
+
+  const SCENARIOS = [5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 75, 100];
+
+  function vatRate() {
+    if (!vatOn) return 0;
+    return (parseFloat(document.getElementById('vat-rate').value) || 0) / 100;
+  }
+
+  function fmt(n) {
+    if (currency === 'LBP') return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function withCurr(n) { return currency + ' ' + fmt(n); }
+
+  function calc() {
+    const cost   = parseFloat(document.getElementById('cost').value)   || 0;
+    const margin = parseFloat(document.getElementById('margin').value) || 0;
+    const marked = parseFloat(document.getElementById('marked').value) || 0;
+    const vat    = vatRate();
+    const vatPct = (vat * 100).toFixed(1).replace(/\.0$/, '');
+
+    const targetNet = cost * (1 + margin / 100);
+    const minSale   = targetNet * (1 + vat);
+    const vatAmt    = minSale - targetNet;
+    const profit    = targetNet - cost;
+    const discAmt   = marked - minSale;
+    const discPct   = marked > 0 ? (discAmt / marked) * 100 : null;
+
+    document.getElementById('out-sale').textContent   = withCurr(minSale);
+    document.getElementById('out-profit').textContent = withCurr(profit);
+    document.getElementById('out-vat').textContent    = vatOn ? withCurr(vatAmt) : '—';
+    document.getElementById('vat-note').textContent   = vatOn ? `(VAT ${vatPct}% incl.)` : '(VAT exempt)';
+
+    const discEl = document.getElementById('out-disc');
+    const errEl  = document.getElementById('msg-error');
+
+    if (discPct === null) {
+      discEl.textContent = '—';
+      discEl.className = 'metric-value blue';
+      errEl.style.display = 'none';
+    } else if (discPct < 0) {
+      discEl.textContent = '0%';
+      discEl.className = 'metric-value red';
+      errEl.style.display = 'block';
+      errEl.textContent = `Marked price (${withCurr(marked)}) is below the minimum needed (${withCurr(minSale)}). Raise your marked price or lower the margin.`;
+    } else {
+      discEl.textContent = discPct.toFixed(2) + '%';
+      discEl.className = 'metric-value blue';
+      errEl.style.display = 'none';
+    }
+
+    const tbody = document.getElementById('scenarios-body');
+    tbody.innerHTML = '';
+    SCENARIOS.forEach(m => {
+      const net  = cost * (1 + m / 100);
+      const sale = net * (1 + vat);
+      const pft  = net - cost;
+      const dPct = marked > 0 ? ((marked - sale) / marked) * 100 : null;
+      const isCurrent = m === margin;
+
+      const tr = document.createElement('tr');
+      if (isCurrent) tr.className = 'current-row';
+
+      const discText  = dPct === null ? '—' : dPct < 0 ? '✗ price too low' : dPct.toFixed(2) + '%';
+      const discClass = dPct !== null && dPct < 0 ? 'disc tight' : 'disc';
+
+      tr.innerHTML = `
+        <td>${m}%${isCurrent ? ' ← you' : ''}</td>
+        <td>${withCurr(sale)}</td>
+        <td class="${discClass}">${discText}</td>
+        <td>${withCurr(pft)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('vat-toggle').addEventListener('click', () => {
+    vatOn = !vatOn;
+    document.getElementById('vat-switch').className = 'switch' + (vatOn ? ' on' : '');
+    document.getElementById('vat-rate').disabled = !vatOn;
+    document.getElementById('vat-rate').style.opacity = vatOn ? '1' : '0.4';
+    calc();
+  });
+
+  document.getElementById('vat-rate').addEventListener('input', calc);
+
+  document.querySelectorAll('#curr-seg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#curr-seg button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currency = btn.dataset.curr;
+      calc();
+    });
+  });
+
+  document.getElementById('toggle-scenarios').addEventListener('click', () => {
+    scenariosVisible = !scenariosVisible;
+    document.getElementById('scenarios-section').style.display = scenariosVisible ? '' : 'none';
+    document.getElementById('toggle-scenarios').textContent = scenariosVisible ? 'Hide' : 'Show';
+  });
+
+  ['cost', 'margin', 'marked'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calc);
+  });
+
+  calc();
+</script>
+</body>
+</html>
