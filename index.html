@@ -30,219 +30,172 @@
       border: 0.5px solid #ddd;
       padding: 2rem;
       width: 100%;
-      max-width: 960px;
+      max-width: 1020px;
     }
 
     h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
     .subtitle { font-size: 13px; color: #666; margin-bottom: 1.25rem; }
 
     /* tabs */
-    .tabs {
-      display: flex;
-      gap: 0;
-      border: 0.5px solid #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-      width: fit-content;
-      margin-bottom: 1.5rem;
-    }
-    .tab-btn {
-      padding: 7px 20px;
-      font-size: 13px;
-      border: none;
-      background: #fafafa;
-      cursor: pointer;
-      color: #555;
-      transition: background 0.12s, color 0.12s;
-    }
+    .tabs { display: flex; border: 0.5px solid #ccc; border-radius: 8px; overflow: hidden; width: fit-content; margin-bottom: 1.25rem; }
+    .tab-btn { padding: 7px 20px; font-size: 13px; border: none; background: #fafafa; cursor: pointer; color: #555; transition: background 0.12s, color 0.12s; }
     .tab-btn + .tab-btn { border-left: 0.5px solid #ccc; }
     .tab-btn.active { background: #1a1a1a; color: #fff; }
 
     /* toolbar */
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 1.25rem;
-    }
+    .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1.25rem; }
     .toolbar-label { font-size: 13px; color: #555; }
 
-    .seg {
-      display: flex;
-      border: 0.5px solid #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .seg button {
-      padding: 6px 14px;
-      font-size: 13px;
-      border: none;
-      background: #fafafa;
-      cursor: pointer;
-      color: #555;
-      transition: background 0.12s, color 0.12s;
-    }
+    .seg { display: flex; border: 0.5px solid #ccc; border-radius: 8px; overflow: hidden; }
+    .seg button { padding: 6px 14px; font-size: 13px; border: none; background: #fafafa; cursor: pointer; color: #555; transition: background 0.12s, color 0.12s; }
     .seg button + button { border-left: 0.5px solid #ccc; }
     .seg button.active { background: #1a1a1a; color: #fff; }
 
-    .vat-row { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+    .rate-wrap { display: flex; align-items: center; gap: 5px; }
+    .rate-wrap input { width: 80px; padding: 5px 8px; font-size: 13px; border: 0.5px solid #ccc; border-radius: 8px; outline: none; background: #fafafa; }
+    .rate-wrap input:focus { border-color: #888; background: #fff; }
+    .rate-wrap span { font-size: 13px; color: #777; }
+
+    .vat-group { display: flex; align-items: center; gap: 8px; margin-left: auto; }
     .vat-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-    .vat-toggle-label { font-size: 13px; color: #555; white-space: nowrap; }
-
-    .switch {
-      width: 40px; height: 22px; border-radius: 11px;
-      background: #ccc; position: relative; transition: background 0.2s; flex-shrink: 0;
-    }
+    .vat-toggle-label { font-size: 13px; color: #555; }
+    .switch { width: 40px; height: 22px; border-radius: 11px; background: #ccc; position: relative; transition: background 0.2s; flex-shrink: 0; }
     .switch.on { background: #185fa5; }
-    .switch::after {
-      content: ''; position: absolute;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: #fff; top: 3px; left: 3px; transition: left 0.2s;
-    }
+    .switch::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left 0.2s; }
     .switch.on::after { left: 21px; }
-
     .vat-rate-wrap { display: flex; align-items: center; gap: 4px; }
-    .vat-rate-wrap input[type="number"] { width: 62px; padding: 5px 8px; font-size: 13px; }
+    .vat-rate-wrap input { width: 58px; padding: 5px 8px; font-size: 13px; border: 0.5px solid #ccc; border-radius: 8px; outline: none; background: #fafafa; }
+    .vat-rate-wrap input:focus { border-color: #888; }
     .vat-rate-wrap span { font-size: 13px; color: #555; }
 
-    /* single view */
-    .inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 1rem;
-    }
-    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
-    input[type="number"] {
-      width: 100%; padding: 8px 12px; font-size: 15px;
-      border: 0.5px solid #ccc; border-radius: 8px;
-      outline: none; background: #fafafa; transition: border-color 0.15s;
-    }
-    input[type="number"]:focus { border-color: #888; background: #fff; }
+    .print-btn { padding: 6px 14px; font-size: 13px; border: 0.5px solid #ccc; border-radius: 8px; background: #fafafa; cursor: pointer; color: #555; transition: background 0.12s; }
+    .print-btn:hover { background: #f0f0f0; }
 
-    .results {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px; margin-bottom: 1.25rem;
-    }
+    .saved-badge { font-size: 11px; color: #3b6d11; background: #eaf3de; padding: 3px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.4s; }
+    .saved-badge.show { opacity: 1; }
+
+    /* single view */
+    .inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 1rem; }
+    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
+    input[type="number"], input[type="text"] { width: 100%; padding: 8px 12px; font-size: 15px; border: 0.5px solid #ccc; border-radius: 8px; outline: none; background: #fafafa; transition: border-color 0.15s; }
+    input[type="number"]:focus, input[type="text"]:focus { border-color: #888; background: #fff; }
+
+    .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.25rem; }
     .metric { background: #f5f5f3; border-radius: 8px; padding: 14px; }
     .metric-label { font-size: 12px; color: #666; margin-bottom: 6px; line-height: 1.4; }
-    .metric-value { font-size: 22px; font-weight: 500; }
+    .metric-value { font-size: 21px; font-weight: 500; }
     .metric-value.blue { color: #185fa5; }
     .metric-value.green { color: #3b6d11; }
     .metric-value.muted { color: #888; }
     .metric-value.red { color: #a32d2d; }
+    .metric-secondary { font-size: 11px; color: #aaa; margin-top: 3px; }
 
-    .msg-error {
-      font-size: 13px; padding: 10px 14px; border-radius: 8px;
-      margin-bottom: 1rem; display: none; line-height: 1.5;
-      background: #fcebeb; color: #a32d2d;
-    }
+    .msg-error { font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-bottom: 1rem; display: none; line-height: 1.5; background: #fcebeb; color: #a32d2d; }
 
     .divider { border: none; border-top: 0.5px solid #e8e8e8; margin: 1.25rem 0; }
-    .section-label {
-      font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
-      text-transform: uppercase; color: #999; margin-bottom: 8px;
-    }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #999; }
     .scenarios-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .hide-btn {
-      font-size: 12px; color: #888; background: none;
-      border: 0.5px solid #ccc; border-radius: 6px;
-      padding: 3px 10px; cursor: pointer; transition: background 0.12s, color 0.12s;
-    }
-    .hide-btn:hover { background: #f0f0f0; color: #333; }
+    .hide-btn { font-size: 12px; color: #888; background: none; border: 0.5px solid #ccc; border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: background 0.12s; }
+    .hide-btn:hover { background: #f0f0f0; }
 
     .scenarios-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th {
-      text-align: left; font-weight: 500; font-size: 12px; color: #888;
-      padding: 6px 10px; border-bottom: 0.5px solid #e8e8e8;
-    }
-    td { padding: 7px 10px; border-bottom: 0.5px solid #f0f0f0; color: #333; }
+    th { text-align: left; font-weight: 500; font-size: 12px; color: #888; padding: 6px 10px; border-bottom: 0.5px solid #e8e8e8; }
+    td { padding: 7px 10px; border-bottom: 0.5px solid #f0f0f0; color: #333; vertical-align: middle; }
     tr.current-row td { background: #f0f5ff; font-weight: 500; color: #0c447c; }
     tr:last-child td { border-bottom: none; }
     td.disc { color: #185fa5; }
     td.disc.tight { color: #a32d2d; }
 
-    .explanation {
-      border-top: 0.5px solid #e8e8e8; padding-top: 1rem;
-      font-size: 13px; color: #666; line-height: 1.7;
-    }
+    .explanation { border-top: 0.5px solid #e8e8e8; padding-top: 1rem; font-size: 13px; color: #666; line-height: 1.7; }
     .explanation strong { color: #1a1a1a; }
 
     /* bulk view */
-    .bulk-toolbar {
-      display: flex; align-items: center; gap: 8px;
-      flex-wrap: wrap; margin-bottom: 1rem;
-    }
-    .btn {
-      padding: 7px 16px; font-size: 13px; border-radius: 8px;
-      border: 0.5px solid #ccc; background: #fafafa;
-      cursor: pointer; color: #333; transition: background 0.12s;
-    }
+    .bulk-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .btn { padding: 7px 14px; font-size: 13px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; color: #333; transition: background 0.12s; }
     .btn:hover { background: #f0f0f0; }
     .btn.primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .btn.primary:hover { background: #333; }
     .btn.danger { color: #a32d2d; border-color: #f0b8b8; }
     .btn.danger:hover { background: #fcebeb; }
 
+    .import-hint { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+    .import-hint strong { color: #888; }
+
     .bulk-table-wrap { overflow-x: auto; margin-bottom: 1rem; }
-    .bulk-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 780px; }
-    .bulk-table th {
-      text-align: left; font-weight: 500; font-size: 12px; color: #888;
-      padding: 8px 10px; border-bottom: 0.5px solid #e8e8e8; white-space: nowrap;
-    }
-    .bulk-table td { padding: 6px 6px; border-bottom: 0.5px solid #f5f5f5; vertical-align: middle; }
+    .bulk-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 860px; }
+    .bulk-table th { text-align: left; font-weight: 500; font-size: 11px; color: #999; padding: 7px 8px; border-bottom: 0.5px solid #e8e8e8; white-space: nowrap; letter-spacing: 0.03em; text-transform: uppercase; }
+    .bulk-table td { padding: 5px 5px; border-bottom: 0.5px solid #f5f5f5; vertical-align: middle; }
     .bulk-table tr:last-child td { border-bottom: none; }
 
     .bulk-table input[type="text"],
-    .bulk-table input[type="number"] {
-      width: 100%; padding: 6px 8px; font-size: 13px;
-      border: 0.5px solid #e0e0e0; border-radius: 6px;
-      background: #fafafa; outline: none;
-    }
+    .bulk-table input[type="number"] { width: 100%; padding: 5px 8px; font-size: 13px; border: 0.5px solid #e8e8e8; border-radius: 6px; background: #fafafa; outline: none; }
     .bulk-table input:focus { border-color: #888; background: #fff; }
 
-    .out-cell { font-size: 13px; font-weight: 500; padding: 6px 10px; white-space: nowrap; }
+    .notes-input { font-size: 12px !important; color: #888; padding: 5px 7px !important; }
+    .notes-input::placeholder { color: #ccc; }
+
+    .out-cell { font-size: 13px; font-weight: 500; padding: 5px 8px; white-space: nowrap; display: block; }
+    .out-secondary { font-size: 10px; color: #bbb; padding: 0 8px 3px; display: block; }
     .out-cell.blue { color: #185fa5; }
     .out-cell.green { color: #3b6d11; }
     .out-cell.muted { color: #888; }
     .out-cell.red { color: #a32d2d; }
 
-    .del-btn {
-      background: none; border: none; cursor: pointer;
-      color: #ccc; font-size: 16px; padding: 4px 8px;
-      border-radius: 6px; transition: color 0.12s, background 0.12s;
-    }
+    .del-btn { background: none; border: none; cursor: pointer; color: #ddd; font-size: 14px; padding: 4px 8px; border-radius: 6px; transition: color 0.12s, background 0.12s; }
     .del-btn:hover { color: #a32d2d; background: #fcebeb; }
 
-    footer {
-      margin-top: 1.5rem; font-size: 12px;
-      color: #bbb; text-align: center; width: 100%; max-width: 960px;
+    footer { margin-top: 1.5rem; font-size: 12px; color: #bbb; text-align: center; width: 100%; max-width: 1020px; }
+
+    /* ── print styles ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .no-print { display: none !important; }
+      .card { border: none; border-radius: 0; padding: 0.5rem; max-width: 100%; box-shadow: none; }
+      .print-header { display: block !important; margin-bottom: 1rem; }
+      footer { display: block; margin-top: 1rem; }
+      .bulk-table { min-width: unset; }
+      .bulk-table input { border: none; background: transparent; padding: 0; font-size: 13px; }
+      .del-btn { display: none; }
     }
+    .print-header { display: none; border-bottom: 1px solid #ccc; padding-bottom: 0.75rem; margin-bottom: 1rem; }
+    .print-header h2 { font-size: 16px; font-weight: 500; }
+    .print-header p { font-size: 12px; color: #666; margin-top: 2px; }
   </style>
 </head>
 <body>
 <div class="card">
-  <h1>Pricing Calculator</h1>
-  <p class="subtitle">Margin-based pricing with optional VAT — built by Fawzi Atwi</p>
+
+  <!-- print-only header -->
+  <div class="print-header">
+    <h2>Pricing Calculator</h2>
+    <p>Built by Fawzi Atwi &mdash; Printed <span id="print-date"></span></p>
+  </div>
+
+  <h1 class="no-print">Pricing Calculator</h1>
+  <p class="subtitle no-print">Margin-based pricing with VAT &mdash; built by Fawzi Atwi</p>
 
   <!-- tabs -->
-  <div class="tabs">
+  <div class="tabs no-print">
     <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Single item</button>
     <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">Multiple items</button>
   </div>
 
   <!-- shared toolbar -->
-  <div class="toolbar">
+  <div class="toolbar no-print">
     <span class="toolbar-label">Currency:</span>
     <div class="seg" id="curr-seg">
       <button class="active" data-curr="LBP">LBP</button>
       <button data-curr="$">$</button>
       <button data-curr="€">€</button>
     </div>
-    <div class="vat-row">
+
+    <div class="rate-wrap">
+      <input type="number" id="exchange-rate" min="1" step="100" value="89500" title="LBP per $1 USD" />
+      <span>LBP / $</span>
+    </div>
+
+    <div class="vat-group">
       <div class="vat-toggle" id="vat-toggle">
         <div class="switch on" id="vat-switch"></div>
         <span class="vat-toggle-label">VAT</span>
@@ -252,6 +205,9 @@
         <span>%</span>
       </div>
     </div>
+
+    <button class="print-btn" onclick="doPrint()">Print / PDF</button>
+    <span class="saved-badge" id="saved-badge">Saved</span>
   </div>
 
   <!-- ══════════ SINGLE ITEM ══════════ -->
@@ -275,6 +231,7 @@
       <div class="metric">
         <div class="metric-label">Min. sale price<br><span id="vat-note" style="font-size:11px;color:#aaa;">(VAT incl.)</span></div>
         <div class="metric-value blue" id="out-sale">—</div>
+        <div class="metric-secondary" id="out-sale-sec"></div>
       </div>
       <div class="metric">
         <div class="metric-label">Max. discount to offer</div>
@@ -283,10 +240,12 @@
       <div class="metric">
         <div class="metric-label">Your net profit</div>
         <div class="metric-value green" id="out-profit">—</div>
+        <div class="metric-secondary" id="out-profit-sec"></div>
       </div>
       <div class="metric">
         <div class="metric-label">VAT for gov.</div>
         <div class="metric-value muted" id="out-vat">—</div>
+        <div class="metric-secondary" id="out-vat-sec"></div>
       </div>
     </div>
 
@@ -295,16 +254,14 @@
     <hr class="divider" />
 
     <div class="scenarios-header">
-      <span class="section-label" style="margin-bottom:0;">Margin scenarios</span>
-      <button class="hide-btn" id="toggle-scenarios">Hide</button>
+      <span class="section-label">Margin scenarios</span>
+      <button class="hide-btn no-print" id="toggle-scenarios">Hide</button>
     </div>
     <div id="scenarios-section">
       <div class="scenarios-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Margin %</th><th>Min. sale price</th><th>Max. discount</th><th>Net profit</th>
-            </tr>
+            <tr><th>Margin %</th><th>Min. sale price</th><th>Max. discount</th><th>Net profit</th></tr>
           </thead>
           <tbody id="scenarios-body"></tbody>
         </table>
@@ -321,38 +278,33 @@
 
   <!-- ══════════ MULTIPLE ITEMS ══════════ -->
   <div id="view-bulk" style="display:none;">
-    <div class="bulk-toolbar">
+    <div class="bulk-toolbar no-print">
       <button class="btn primary" onclick="addRow()">+ Add item</button>
-      <button class="btn" onclick="triggerImport()">Import from Excel</button>
+      <button class="btn" onclick="triggerImport()">Import Excel / CSV</button>
       <button class="btn" onclick="exportCSV()">Export to Excel</button>
       <button class="btn danger" onclick="clearAll()">Clear all</button>
       <input type="file" id="csv-file-input" accept=".csv,.xlsx,.xls" style="display:none;" onchange="importFile(event)" />
     </div>
-    <div style="font-size:12px;color:#aaa;margin-bottom:10px;">
-      Import directly from <strong>.xlsx</strong> or <strong>.csv</strong> — columns must be in this order: <strong>Item name · Cost · Margin % · Marked price</strong>
-    </div>
+    <p class="import-hint no-print">Import columns must be in this order: <strong>Item name · Cost · Margin % · Marked price</strong></p>
 
     <div class="bulk-table-wrap">
       <table class="bulk-table" id="bulk-table">
         <thead>
           <tr>
-            <th style="width:160px;">Item name</th>
-            <th style="width:110px;">Cost</th>
-            <th style="width:100px;">Margin %</th>
-            <th style="width:120px;">Marked price</th>
-            <th style="width:130px;">Min. sale price</th>
-            <th style="width:110px;">Max. discount</th>
+            <th style="width:150px;">Item name</th>
+            <th style="width:90px;">Cost</th>
+            <th style="width:80px;">Margin %</th>
+            <th style="width:100px;">Marked price</th>
+            <th style="width:115px;">Min. sale price</th>
+            <th style="width:100px;">Max. discount</th>
             <th style="width:110px;">Net profit</th>
-            <th style="width:100px;">VAT amount</th>
-            <th style="width:36px;"></th>
+            <th style="width:95px;">VAT</th>
+            <th style="width:100px;">Notes</th>
+            <th style="width:30px;" class="no-print"></th>
           </tr>
         </thead>
         <tbody id="bulk-body"></tbody>
       </table>
-    </div>
-
-    <div style="font-size:12px;color:#aaa;margin-top:6px;">
-      Type in any field — results update instantly.
     </div>
   </div>
 </div>
@@ -366,13 +318,12 @@
   let currency = 'LBP';
   let scenariosVisible = true;
   let rowId = 0;
+  let saveTimer = null;
 
   const SCENARIOS = [5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 75, 100];
 
-  function vatRate() {
-    if (!vatOn) return 0;
-    return (parseFloat(document.getElementById('vat-rate').value) || 0) / 100;
-  }
+  function vatRate()      { return vatOn ? (parseFloat(document.getElementById('vat-rate').value) || 0) / 100 : 0; }
+  function exchangeRate() { return parseFloat(document.getElementById('exchange-rate').value) || 89500; }
 
   function fmt(n) {
     if (currency === 'LBP') return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -380,6 +331,13 @@
   }
 
   function withCurr(n) { return currency + ' ' + fmt(n); }
+
+  function secondary(n) {
+    const rate = exchangeRate();
+    if (currency === 'LBP') return '$ ' + (n / rate).toFixed(2);
+    if (currency === '$')   return 'LBP ' + Math.round(n * rate).toLocaleString('en-US');
+    return '';
+  }
 
   // ── single calc ──
   function calcSingle() {
@@ -395,14 +353,16 @@
     const profit    = targetNet - cost;
     const discPct   = marked > 0 ? ((marked - minSale) / marked) * 100 : null;
 
-    document.getElementById('out-sale').textContent   = withCurr(minSale);
-    document.getElementById('out-profit').textContent = withCurr(profit);
-    document.getElementById('out-vat').textContent    = vatOn ? withCurr(vatAmt) : '—';
-    document.getElementById('vat-note').textContent   = vatOn ? `(VAT ${vatPct}% incl.)` : '(VAT exempt)';
+    document.getElementById('out-sale').textContent      = withCurr(minSale);
+    document.getElementById('out-sale-sec').textContent  = secondary(minSale);
+    document.getElementById('out-profit').textContent    = withCurr(profit);
+    document.getElementById('out-profit-sec').textContent= secondary(profit);
+    document.getElementById('out-vat').textContent       = vatOn ? withCurr(vatAmt) : '—';
+    document.getElementById('out-vat-sec').textContent   = vatOn ? secondary(vatAmt) : '';
+    document.getElementById('vat-note').textContent      = vatOn ? `(VAT ${vatPct}% incl.)` : '(VAT exempt)';
 
     const discEl = document.getElementById('out-disc');
     const errEl  = document.getElementById('msg-error');
-
     if (discPct === null) {
       discEl.textContent = '—'; discEl.className = 'metric-value blue'; errEl.style.display = 'none';
     } else if (discPct < 0) {
@@ -425,7 +385,12 @@
       if (isCurrent) tr.className = 'current-row';
       const discText  = dPct === null ? '—' : dPct < 0 ? '✗ price too low' : dPct.toFixed(2) + '%';
       const discClass = dPct !== null && dPct < 0 ? 'disc tight' : 'disc';
-      tr.innerHTML = `<td>${m}%${isCurrent ? ' ← you' : ''}</td><td>${withCurr(sale)}</td><td class="${discClass}">${discText}</td><td>${withCurr(pft)}</td>`;
+      tr.innerHTML = `
+        <td>${m}%${isCurrent ? ' ← you' : ''}</td>
+        <td>${withCurr(sale)}<br><small style="color:#bbb;font-size:11px;">${secondary(sale)}</small></td>
+        <td class="${discClass}">${discText}</td>
+        <td>${withCurr(pft)}<br><small style="color:#bbb;font-size:11px;">${secondary(pft)}</small></td>
+      `;
       tbody.appendChild(tr);
     });
   }
@@ -443,9 +408,15 @@
     const profit    = targetNet - cost;
     const discPct   = marked > 0 ? ((marked - minSale) / marked) * 100 : null;
 
-    document.getElementById(`r-sale-${id}`).textContent   = cost > 0 ? withCurr(minSale) : '—';
-    document.getElementById(`r-profit-${id}`).textContent = cost > 0 ? withCurr(profit)  : '—';
-    document.getElementById(`r-vat-${id}`).textContent    = (cost > 0 && vatOn) ? withCurr(vatAmt) : '—';
+    const set = (sel, val, sec) => {
+      document.getElementById(sel).textContent = val;
+      const s = document.getElementById(sel + '-sec');
+      if (s) s.textContent = sec || '';
+    };
+
+    set(`r-sale-${id}`, cost > 0 ? withCurr(minSale) : '—', cost > 0 ? secondary(minSale) : '');
+    set(`r-profit-${id}`, cost > 0 ? withCurr(profit) : '—', cost > 0 ? secondary(profit) : '');
+    set(`r-vat-${id}`, (cost > 0 && vatOn) ? withCurr(vatAmt) : '—', (cost > 0 && vatOn) ? secondary(vatAmt) : '');
 
     const discEl = document.getElementById(`r-disc-${id}`);
     if (discPct === null || cost === 0) {
@@ -461,38 +432,43 @@
     document.querySelectorAll('[data-row-id]').forEach(tr => calcRow(tr.dataset.rowId));
   }
 
-  function addRow() {
+  function addRow(data) {
+    data = data || {};
     const id = ++rowId;
     const tbody = document.getElementById('bulk-body');
     const tr = document.createElement('tr');
     tr.dataset.rowId = id;
     tr.innerHTML = `
-      <td><input type="text" placeholder="Item name" id="r-name-${id}" /></td>
-      <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" oninput="calcRow(${id})" /></td>
-      <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" oninput="calcRow(${id})" /></td>
-      <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" oninput="calcRow(${id})" /></td>
-      <td><span class="out-cell muted" id="r-sale-${id}">—</span></td>
+      <td><input type="text" placeholder="Item name" id="r-name-${id}" value="${data.name || ''}" oninput="scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" value="${data.cost || ''}" oninput="calcRow(${id});scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" value="${data.margin || ''}" oninput="calcRow(${id});scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" value="${data.marked || ''}" oninput="calcRow(${id});scheduleSave()" /></td>
+      <td><span class="out-cell muted" id="r-sale-${id}">—</span><span class="out-secondary" id="r-sale-${id}-sec"></span></td>
       <td><span class="out-cell blue" id="r-disc-${id}">—</span></td>
-      <td><span class="out-cell green" id="r-profit-${id}">—</span></td>
-      <td><span class="out-cell muted" id="r-vat-${id}">—</span></td>
-      <td><button class="del-btn" onclick="deleteRow(${id})" title="Remove">✕</button></td>
+      <td><span class="out-cell green" id="r-profit-${id}">—</span><span class="out-secondary" id="r-profit-${id}-sec"></span></td>
+      <td><span class="out-cell muted" id="r-vat-${id}">—</span><span class="out-secondary" id="r-vat-${id}-sec"></span></td>
+      <td><input type="text" class="notes-input" placeholder="notes…" id="r-notes-${id}" value="${data.notes || ''}" oninput="scheduleSave()" /></td>
+      <td class="no-print"><button class="del-btn" onclick="deleteRow(${id})">✕</button></td>
     `;
     tbody.appendChild(tr);
-    document.getElementById(`r-cost-${id}`).focus();
+    if (data.cost || data.margin || data.marked) calcRow(id);
+    return id;
   }
 
   function deleteRow(id) {
     const tr = document.querySelector(`[data-row-id="${id}"]`);
-    if (tr) tr.remove();
+    if (tr) { tr.remove(); scheduleSave(); }
   }
 
   function clearAll() {
     if (confirm('Clear all items?')) {
       document.getElementById('bulk-body').innerHTML = '';
       rowId = 0;
+      scheduleSave();
     }
   }
 
+  // ── import ──
   function triggerImport() {
     document.getElementById('csv-file-input').value = '';
     document.getElementById('csv-file-input').click();
@@ -503,7 +479,6 @@
     if (!file) return;
     const isXLSX = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
     const reader = new FileReader();
-
     reader.onload = function(e) {
       let rows = [];
       if (isXLSX) {
@@ -514,55 +489,41 @@
         rows = e.target.result.split('\n').map(l => l.trim()).filter(l => l)
           .map(l => l.split(',').map(c => c.replace(/^"|"$/g, '').trim()));
       }
-
-      // skip header if second column of first row is not a number
       const startIndex = (rows.length && isNaN(parseFloat(rows[0][1]))) ? 1 : 0;
-      const tbody = document.getElementById('bulk-body');
-
       rows.slice(startIndex).forEach(cols => {
         if (!cols[0] && !cols[1] && !cols[2] && !cols[3]) return;
-        const id = ++rowId;
-        const tr = document.createElement('tr');
-        tr.dataset.rowId = id;
-        tr.innerHTML = `
-          <td><input type="text" placeholder="Item name" id="r-name-${id}" value="${cols[0] || ''}" /></td>
-          <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" value="${cols[1] || ''}" oninput="calcRow(${id})" /></td>
-          <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" value="${cols[2] || ''}" oninput="calcRow(${id})" /></td>
-          <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" value="${cols[3] || ''}" oninput="calcRow(${id})" /></td>
-          <td><span class="out-cell muted" id="r-sale-${id}">—</span></td>
-          <td><span class="out-cell blue" id="r-disc-${id}">—</span></td>
-          <td><span class="out-cell green" id="r-profit-${id}">—</span></td>
-          <td><span class="out-cell muted" id="r-vat-${id}">—</span></td>
-          <td><button class="del-btn" onclick="deleteRow(${id})" title="Remove">✕</button></td>
-        `;
-        tbody.appendChild(tr);
+        const id = addRow({ name: cols[0], cost: cols[1], margin: cols[2], marked: cols[3] });
         calcRow(id);
       });
+      scheduleSave();
     };
-
     if (isXLSX) reader.readAsBinaryString(file);
     else reader.readAsText(file);
   }
 
+  // ── export ──
   function exportCSV() {
     const rows = document.querySelectorAll('[data-row-id]');
     if (!rows.length) return alert('No items to export.');
-    const lines = ['Item,Cost,Margin %,Marked Price,Min Sale Price,Max Discount,Net Profit,VAT Amount'];
+    const vatPct = (vatRate() * 100).toFixed(1).replace(/\.0$/, '');
+    const lines = [`Item,Cost (${currency}),Margin %,Marked Price (${currency}),Min Sale Price (${currency}),Max Discount,Net Profit (${currency}),VAT ${vatPct}% (${currency}),Notes`];
     rows.forEach(tr => {
       const id = tr.dataset.rowId;
-      const name   = document.getElementById(`r-name-${id}`).value   || '';
-      const cost   = document.getElementById(`r-cost-${id}`).value   || '';
-      const margin = document.getElementById(`r-margin-${id}`).value || '';
-      const marked = document.getElementById(`r-marked-${id}`).value || '';
-      const sale   = document.getElementById(`r-sale-${id}`).textContent;
-      const disc   = document.getElementById(`r-disc-${id}`).textContent;
-      const profit = document.getElementById(`r-profit-${id}`).textContent;
-      const vat    = document.getElementById(`r-vat-${id}`).textContent;
-      lines.push([name, cost, margin, marked, sale, disc, profit, vat].map(v => `"${v}"`).join(','));
+      const get = s => document.getElementById(s) ? document.getElementById(s).value || document.getElementById(s).textContent : '';
+      lines.push([
+        get(`r-name-${id}`), get(`r-cost-${id}`), get(`r-margin-${id}`), get(`r-marked-${id}`),
+        get(`r-sale-${id}`), get(`r-disc-${id}`), get(`r-profit-${id}`), get(`r-vat-${id}`), get(`r-notes-${id}`)
+      ].map(v => `"${v}"`).join(','));
     });
     const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = 'pricing.csv'; a.click();
+  }
+
+  // ── print ──
+  function doPrint() {
+    document.getElementById('print-date').textContent = new Date().toLocaleDateString();
+    window.print();
   }
 
   // ── tab switch ──
@@ -571,17 +532,19 @@
     document.getElementById('view-bulk').style.display   = tab === 'bulk'   ? '' : 'none';
     document.getElementById('tab-single').className = 'tab-btn' + (tab === 'single' ? ' active' : '');
     document.getElementById('tab-bulk').className   = 'tab-btn' + (tab === 'bulk'   ? ' active' : '');
+    localStorage.setItem('pc-tab', tab);
   }
 
   // ── VAT toggle ──
   document.getElementById('vat-toggle').addEventListener('click', () => {
     vatOn = !vatOn;
     document.getElementById('vat-switch').className = 'switch' + (vatOn ? ' on' : '');
-    document.getElementById('vat-rate').disabled = !vatOn;
+    document.getElementById('vat-rate').disabled    = !vatOn;
     document.getElementById('vat-rate').style.opacity = vatOn ? '1' : '0.4';
-    calcSingle(); calcAllRows();
+    calcSingle(); calcAllRows(); scheduleSave();
   });
-  document.getElementById('vat-rate').addEventListener('input', () => { calcSingle(); calcAllRows(); });
+  document.getElementById('vat-rate').addEventListener('input', () => { calcSingle(); calcAllRows(); scheduleSave(); });
+  document.getElementById('exchange-rate').addEventListener('input', () => { calcSingle(); calcAllRows(); scheduleSave(); });
 
   // ── currency ──
   document.querySelectorAll('#curr-seg button').forEach(btn => {
@@ -589,7 +552,7 @@
       document.querySelectorAll('#curr-seg button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currency = btn.dataset.curr;
-      calcSingle(); calcAllRows();
+      calcSingle(); calcAllRows(); scheduleSave();
     });
   });
 
@@ -601,11 +564,85 @@
   });
 
   ['cost', 'margin', 'marked'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calcSingle);
+    document.getElementById(id).addEventListener('input', () => { calcSingle(); scheduleSave(); });
   });
 
-  // start with 3 empty rows in bulk
-  addRow(); addRow(); addRow();
+  // ── save / load session ──
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveSession, 600);
+  }
+
+  function saveSession() {
+    const rows = [];
+    document.querySelectorAll('[data-row-id]').forEach(tr => {
+      const id = tr.dataset.rowId;
+      rows.push({
+        name:   document.getElementById(`r-name-${id}`)?.value   || '',
+        cost:   document.getElementById(`r-cost-${id}`)?.value   || '',
+        margin: document.getElementById(`r-margin-${id}`)?.value || '',
+        marked: document.getElementById(`r-marked-${id}`)?.value || '',
+        notes:  document.getElementById(`r-notes-${id}`)?.value  || ''
+      });
+    });
+    const data = {
+      currency,
+      vatOn,
+      vatRateVal: document.getElementById('vat-rate').value,
+      exchangeRate: document.getElementById('exchange-rate').value,
+      singleCost:   document.getElementById('cost').value,
+      singleMargin: document.getElementById('margin').value,
+      singleMarked: document.getElementById('marked').value,
+      tab: document.getElementById('tab-bulk').classList.contains('active') ? 'bulk' : 'single',
+      rows
+    };
+    try {
+      localStorage.setItem('pricingCalcData', JSON.stringify(data));
+      const badge = document.getElementById('saved-badge');
+      badge.classList.add('show');
+      setTimeout(() => badge.classList.remove('show'), 1500);
+    } catch(e) {}
+  }
+
+  function loadSession() {
+    try {
+      const raw = localStorage.getItem('pricingCalcData');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+
+      if (data.currency) {
+        currency = data.currency;
+        document.querySelectorAll('#curr-seg button').forEach(b => {
+          b.classList.toggle('active', b.dataset.curr === currency);
+        });
+      }
+      if (data.vatOn !== undefined) {
+        vatOn = data.vatOn;
+        document.getElementById('vat-switch').className = 'switch' + (vatOn ? ' on' : '');
+        document.getElementById('vat-rate').disabled    = !vatOn;
+        document.getElementById('vat-rate').style.opacity = vatOn ? '1' : '0.4';
+      }
+      if (data.vatRateVal)   document.getElementById('vat-rate').value      = data.vatRateVal;
+      if (data.exchangeRate) document.getElementById('exchange-rate').value = data.exchangeRate;
+      if (data.singleCost)   document.getElementById('cost').value          = data.singleCost;
+      if (data.singleMargin) document.getElementById('margin').value        = data.singleMargin;
+      if (data.singleMarked) document.getElementById('marked').value        = data.singleMarked;
+
+      if (data.rows && data.rows.length) {
+        document.getElementById('bulk-body').innerHTML = '';
+        rowId = 0;
+        data.rows.forEach(r => { const id = addRow(r); calcRow(id); });
+      }
+      if (data.tab === 'bulk') switchTab('bulk');
+    } catch(e) {}
+  }
+
+  // ── init ──
+  loadSession();
+  // if no saved rows, start with 3 empty rows in bulk
+  if (!document.querySelectorAll('[data-row-id]').length) {
+    addRow(); addRow(); addRow();
+  }
   calcSingle();
 </script>
 </body>
