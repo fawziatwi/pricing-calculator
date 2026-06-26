@@ -284,7 +284,7 @@
       <table class="bulk-table" id="bulk-table">
         <thead>
           <tr>
-            <th style="width:150px;">Item name</th>
+            <th style="width:150px;">Item code</th>
             <th style="width:88px;">Cost</th>
             <th style="width:78px;">Margin %</th>
             <th style="width:100px;">Marked price</th>
@@ -439,7 +439,7 @@
     const tr=document.createElement('tr');
     tr.dataset.rowId=id;
     tr.innerHTML=`
-      <td><input type="text" placeholder="Item name" id="r-name-${id}" value="${esc(data.name||'')}" oninput="scheduleSave()" /></td>
+      <td><input type="text" placeholder="Item code" id="r-name-${id}" value="${esc(data.name||'')}" oninput="scheduleSave()" /></td>
       <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" value="${data.cost||''}" oninput="calcRow(${id});scheduleSave()" /></td>
       <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" value="${data.margin||''}" oninput="calcRow(${id});scheduleSave()" /></td>
       <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" value="${data.marked||''}" oninput="calcRow(${id});scheduleSave()" /></td>
@@ -471,7 +471,7 @@
     const tr=document.createElement('tr');
     tr.dataset.rowId=newId;
     tr.innerHTML=`
-      <td><input type="text" placeholder="Item name" id="r-name-${newId}" value="${esc(data.name)}" oninput="scheduleSave()" /></td>
+      <td><input type="text" placeholder="Item code" id="r-name-${newId}" value="${esc(data.name)}" oninput="scheduleSave()" /></td>
       <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${newId}" value="${data.cost}" oninput="calcRow(${newId});scheduleSave()" /></td>
       <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${newId}" value="${data.margin}" oninput="calcRow(${newId});scheduleSave()" /></td>
       <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${newId}" value="${data.marked}" oninput="calcRow(${newId});scheduleSave()" /></td>
