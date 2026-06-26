@@ -322,8 +322,14 @@
   <div id="view-bulk" style="display:none;">
     <div class="bulk-toolbar">
       <button class="btn primary" onclick="addRow()">+ Add item</button>
-      <button class="btn" onclick="clearAll()">Clear all</button>
-      <button class="btn" onclick="exportCSV()">Export CSV</button>
+      <button class="btn" onclick="triggerImport()">Import from Excel</button>
+      <button class="btn" onclick="exportCSV()">Export to Excel</button>
+      <button class="btn danger" onclick="clearAll()">Clear all</button>
+      <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="importCSV(event)" />
+    </div>
+    <div style="font-size:12px;color:#aaa;margin-bottom:10px;">
+      To import: in Excel go to <strong>File → Save As → CSV</strong>, then click "Import from Excel".<br>
+      Columns must be in this order: <strong>Item name · Cost · Margin % · Marked price</strong>
     </div>
 
     <div class="bulk-table-wrap">
@@ -485,6 +491,45 @@
       document.getElementById('bulk-body').innerHTML = '';
       rowId = 0;
     }
+  }
+
+  function triggerImport() {
+    document.getElementById('csv-file-input').value = '';
+    document.getElementById('csv-file-input').click();
+  }
+
+  function importCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l);
+      const tbody = document.getElementById('bulk-body');
+
+      // skip header row if first cell is not a number
+      const startIndex = isNaN(parseFloat(lines[0].split(',')[1])) ? 1 : 0;
+
+      lines.slice(startIndex).forEach(line => {
+        const cols = line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
+        const id = ++rowId;
+        const tr = document.createElement('tr');
+        tr.dataset.rowId = id;
+        tr.innerHTML = `
+          <td><input type="text" placeholder="Item name" id="r-name-${id}" value="${cols[0] || ''}" /></td>
+          <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" value="${cols[1] || ''}" oninput="calcRow(${id})" /></td>
+          <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" value="${cols[2] || ''}" oninput="calcRow(${id})" /></td>
+          <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" value="${cols[3] || ''}" oninput="calcRow(${id})" /></td>
+          <td><span class="out-cell muted" id="r-sale-${id}">—</span></td>
+          <td><span class="out-cell blue" id="r-disc-${id}">—</span></td>
+          <td><span class="out-cell green" id="r-profit-${id}">—</span></td>
+          <td><span class="out-cell muted" id="r-vat-${id}">—</span></td>
+          <td><button class="del-btn" onclick="deleteRow(${id})" title="Remove">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+        calcRow(id);
+      });
+    };
+    reader.readAsText(file);
   }
 
   function exportCSV() {
