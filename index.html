@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Pricing" />
   <link rel="apple-touch-icon" href="icon-192.png" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -325,11 +326,10 @@
       <button class="btn" onclick="triggerImport()">Import from Excel</button>
       <button class="btn" onclick="exportCSV()">Export to Excel</button>
       <button class="btn danger" onclick="clearAll()">Clear all</button>
-      <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="importCSV(event)" />
+      <input type="file" id="csv-file-input" accept=".csv,.xlsx,.xls" style="display:none;" onchange="importFile(event)" />
     </div>
     <div style="font-size:12px;color:#aaa;margin-bottom:10px;">
-      To import: in Excel go to <strong>File → Save As → CSV</strong>, then click "Import from Excel".<br>
-      Columns must be in this order: <strong>Item name · Cost · Margin % · Marked price</strong>
+      Import directly from <strong>.xlsx</strong> or <strong>.csv</strong> — columns must be in this order: <strong>Item name · Cost · Margin % · Marked price</strong>
     </div>
 
     <div class="bulk-table-wrap">
@@ -498,19 +498,29 @@
     document.getElementById('csv-file-input').click();
   }
 
-  function importCSV(event) {
+  function importFile(event) {
     const file = event.target.files[0];
     if (!file) return;
+    const isXLSX = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
     const reader = new FileReader();
+
     reader.onload = function(e) {
-      const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l);
+      let rows = [];
+      if (isXLSX) {
+        const wb = XLSX.read(e.target.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      } else {
+        rows = e.target.result.split('\n').map(l => l.trim()).filter(l => l)
+          .map(l => l.split(',').map(c => c.replace(/^"|"$/g, '').trim()));
+      }
+
+      // skip header if second column of first row is not a number
+      const startIndex = (rows.length && isNaN(parseFloat(rows[0][1]))) ? 1 : 0;
       const tbody = document.getElementById('bulk-body');
 
-      // skip header row if first cell is not a number
-      const startIndex = isNaN(parseFloat(lines[0].split(',')[1])) ? 1 : 0;
-
-      lines.slice(startIndex).forEach(line => {
-        const cols = line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
+      rows.slice(startIndex).forEach(cols => {
+        if (!cols[0] && !cols[1] && !cols[2] && !cols[3]) return;
         const id = ++rowId;
         const tr = document.createElement('tr');
         tr.dataset.rowId = id;
@@ -529,7 +539,9 @@
         calcRow(id);
       });
     };
-    reader.readAsText(file);
+
+    if (isXLSX) reader.readAsBinaryString(file);
+    else reader.readAsText(file);
   }
 
   function exportCSV() {
