@@ -7,7 +7,6 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#185fa5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Pricing" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
@@ -30,42 +29,35 @@
       border: 0.5px solid #ddd;
       padding: 2rem;
       width: 100%;
-      max-width: 720px;
+      max-width: 960px;
     }
 
     h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
-    .subtitle { font-size: 13px; color: #666; margin-bottom: 1.5rem; }
+    .subtitle { font-size: 13px; color: #666; margin-bottom: 1.25rem; }
 
-    .section-label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #999;
-      margin-bottom: 8px;
-    }
-
-    .inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 1rem;
-    }
-
-    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 8px 12px;
-      font-size: 15px;
+    /* tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
       border: 0.5px solid #ccc;
       border-radius: 8px;
-      outline: none;
-      background: #fafafa;
-      transition: border-color 0.15s;
+      overflow: hidden;
+      width: fit-content;
+      margin-bottom: 1.5rem;
     }
-    input[type="number"]:focus { border-color: #888; background: #fff; }
+    .tab-btn {
+      padding: 7px 20px;
+      font-size: 13px;
+      border: none;
+      background: #fafafa;
+      cursor: pointer;
+      color: #555;
+      transition: background 0.12s, color 0.12s;
+    }
+    .tab-btn + .tab-btn { border-left: 0.5px solid #ccc; }
+    .tab-btn.active { background: #1a1a1a; color: #fff; }
 
+    /* toolbar */
     .toolbar {
       display: flex;
       align-items: center;
@@ -73,7 +65,6 @@
       flex-wrap: wrap;
       margin-bottom: 1.25rem;
     }
-
     .toolbar-label { font-size: 13px; color: #555; }
 
     .seg {
@@ -94,67 +85,47 @@
     .seg button + button { border-left: 0.5px solid #ccc; }
     .seg button.active { background: #1a1a1a; color: #fff; }
 
-    .vat-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-left: auto;
-      flex-wrap: wrap;
-    }
-
-    .vat-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      user-select: none;
-    }
+    .vat-row { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+    .vat-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
     .vat-toggle-label { font-size: 13px; color: #555; white-space: nowrap; }
 
     .switch {
-      width: 40px; height: 22px;
-      border-radius: 11px;
-      background: #ccc;
-      position: relative;
-      transition: background 0.2s;
-      flex-shrink: 0;
+      width: 40px; height: 22px; border-radius: 11px;
+      background: #ccc; position: relative; transition: background 0.2s; flex-shrink: 0;
     }
     .switch.on { background: #185fa5; }
     .switch::after {
-      content: '';
-      position: absolute;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      top: 3px; left: 3px;
-      transition: left 0.2s;
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; top: 3px; left: 3px; transition: left 0.2s;
     }
     .switch.on::after { left: 21px; }
 
-    .vat-rate-wrap {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .vat-rate-wrap input[type="number"] {
-      width: 62px;
-      padding: 5px 8px;
-      font-size: 13px;
-    }
+    .vat-rate-wrap { display: flex; align-items: center; gap: 4px; }
+    .vat-rate-wrap input[type="number"] { width: 62px; padding: 5px 8px; font-size: 13px; }
     .vat-rate-wrap span { font-size: 13px; color: #555; }
+
+    /* single view */
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+    label { font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
+    input[type="number"] {
+      width: 100%; padding: 8px 12px; font-size: 15px;
+      border: 0.5px solid #ccc; border-radius: 8px;
+      outline: none; background: #fafafa; transition: border-color 0.15s;
+    }
+    input[type="number"]:focus { border-color: #888; background: #fff; }
 
     .results {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 1.25rem;
+      gap: 12px; margin-bottom: 1.25rem;
     }
-
-    .metric {
-      background: #f5f5f3;
-      border-radius: 8px;
-      padding: 14px;
-    }
+    .metric { background: #f5f5f3; border-radius: 8px; padding: 14px; }
     .metric-label { font-size: 12px; color: #666; margin-bottom: 6px; line-height: 1.4; }
     .metric-value { font-size: 22px; font-weight: 500; }
     .metric-value.blue { color: #185fa5; }
@@ -163,81 +134,106 @@
     .metric-value.red { color: #a32d2d; }
 
     .msg-error {
-      font-size: 13px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: none;
-      line-height: 1.5;
-      background: #fcebeb;
-      color: #a32d2d;
+      font-size: 13px; padding: 10px 14px; border-radius: 8px;
+      margin-bottom: 1rem; display: none; line-height: 1.5;
+      background: #fcebeb; color: #a32d2d;
     }
 
     .divider { border: none; border-top: 0.5px solid #e8e8e8; margin: 1.25rem 0; }
-
-    .scenarios-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
+    .section-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #999; margin-bottom: 8px;
     }
-
+    .scenarios-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .hide-btn {
-      font-size: 12px;
-      color: #888;
-      background: none;
-      border: 0.5px solid #ccc;
-      border-radius: 6px;
-      padding: 3px 10px;
-      cursor: pointer;
-      transition: background 0.12s, color 0.12s;
+      font-size: 12px; color: #888; background: none;
+      border: 0.5px solid #ccc; border-radius: 6px;
+      padding: 3px 10px; cursor: pointer; transition: background 0.12s, color 0.12s;
     }
     .hide-btn:hover { background: #f0f0f0; color: #333; }
 
     .scenarios-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
-      text-align: left;
-      font-weight: 500;
-      font-size: 12px;
-      color: #888;
-      padding: 6px 10px;
-      border-bottom: 0.5px solid #e8e8e8;
+      text-align: left; font-weight: 500; font-size: 12px; color: #888;
+      padding: 6px 10px; border-bottom: 0.5px solid #e8e8e8;
     }
-    td {
-      padding: 7px 10px;
-      border-bottom: 0.5px solid #f0f0f0;
-      color: #333;
-    }
+    td { padding: 7px 10px; border-bottom: 0.5px solid #f0f0f0; color: #333; }
     tr.current-row td { background: #f0f5ff; font-weight: 500; color: #0c447c; }
     tr:last-child td { border-bottom: none; }
     td.disc { color: #185fa5; }
     td.disc.tight { color: #a32d2d; }
 
     .explanation {
-      border-top: 0.5px solid #e8e8e8;
-      padding-top: 1rem;
-      font-size: 13px;
-      color: #666;
-      line-height: 1.7;
+      border-top: 0.5px solid #e8e8e8; padding-top: 1rem;
+      font-size: 13px; color: #666; line-height: 1.7;
     }
     .explanation strong { color: #1a1a1a; }
 
+    /* bulk view */
+    .bulk-toolbar {
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .btn {
+      padding: 7px 16px; font-size: 13px; border-radius: 8px;
+      border: 0.5px solid #ccc; background: #fafafa;
+      cursor: pointer; color: #333; transition: background 0.12s;
+    }
+    .btn:hover { background: #f0f0f0; }
+    .btn.primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .btn.primary:hover { background: #333; }
+    .btn.danger { color: #a32d2d; border-color: #f0b8b8; }
+    .btn.danger:hover { background: #fcebeb; }
+
+    .bulk-table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    .bulk-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 780px; }
+    .bulk-table th {
+      text-align: left; font-weight: 500; font-size: 12px; color: #888;
+      padding: 8px 10px; border-bottom: 0.5px solid #e8e8e8; white-space: nowrap;
+    }
+    .bulk-table td { padding: 6px 6px; border-bottom: 0.5px solid #f5f5f5; vertical-align: middle; }
+    .bulk-table tr:last-child td { border-bottom: none; }
+
+    .bulk-table input[type="text"],
+    .bulk-table input[type="number"] {
+      width: 100%; padding: 6px 8px; font-size: 13px;
+      border: 0.5px solid #e0e0e0; border-radius: 6px;
+      background: #fafafa; outline: none;
+    }
+    .bulk-table input:focus { border-color: #888; background: #fff; }
+
+    .out-cell { font-size: 13px; font-weight: 500; padding: 6px 10px; white-space: nowrap; }
+    .out-cell.blue { color: #185fa5; }
+    .out-cell.green { color: #3b6d11; }
+    .out-cell.muted { color: #888; }
+    .out-cell.red { color: #a32d2d; }
+
+    .del-btn {
+      background: none; border: none; cursor: pointer;
+      color: #ccc; font-size: 16px; padding: 4px 8px;
+      border-radius: 6px; transition: color 0.12s, background 0.12s;
+    }
+    .del-btn:hover { color: #a32d2d; background: #fcebeb; }
+
     footer {
-      margin-top: 1.5rem;
-      font-size: 12px;
-      color: #bbb;
-      text-align: center;
-      width: 100%;
-      max-width: 720px;
+      margin-top: 1.5rem; font-size: 12px;
+      color: #bbb; text-align: center; width: 100%; max-width: 960px;
     }
   </style>
 </head>
 <body>
 <div class="card">
   <h1>Pricing Calculator</h1>
-  <p class="subtitle">Margin-based pricing with optional VAT.</p>
+  <p class="subtitle">Margin-based pricing with optional VAT — built by Fawzi Atwi</p>
 
+  <!-- tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Single item</button>
+    <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">Multiple items</button>
+  </div>
+
+  <!-- shared toolbar -->
   <div class="toolbar">
     <span class="toolbar-label">Currency:</span>
     <div class="seg" id="curr-seg">
@@ -257,82 +253,113 @@
     </div>
   </div>
 
-  <div class="inputs">
-    <div>
-      <label for="cost">Cost price</label>
-      <input type="number" id="cost" min="0" step="any" value="100" />
+  <!-- ══════════ SINGLE ITEM ══════════ -->
+  <div id="view-single">
+    <div class="inputs">
+      <div>
+        <label for="cost">Cost price</label>
+        <input type="number" id="cost" min="0" step="any" value="100" />
+      </div>
+      <div>
+        <label for="margin">Desired margin %</label>
+        <input type="number" id="margin" min="0" step="any" value="30" />
+      </div>
+      <div>
+        <label for="marked">Marked / full price</label>
+        <input type="number" id="marked" min="0" step="any" value="200" />
+      </div>
     </div>
-    <div>
-      <label for="margin">Desired margin %</label>
-      <input type="number" id="margin" min="0" step="any" value="30" />
+
+    <div class="results">
+      <div class="metric">
+        <div class="metric-label">Min. sale price<br><span id="vat-note" style="font-size:11px;color:#aaa;">(VAT incl.)</span></div>
+        <div class="metric-value blue" id="out-sale">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Max. discount to offer</div>
+        <div class="metric-value blue" id="out-disc">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Your net profit</div>
+        <div class="metric-value green" id="out-profit">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">VAT for gov.</div>
+        <div class="metric-value muted" id="out-vat">—</div>
+      </div>
     </div>
-    <div>
-      <label for="marked">Marked / full price</label>
-      <input type="number" id="marked" min="0" step="any" value="200" />
+
+    <div class="msg-error" id="msg-error"></div>
+
+    <hr class="divider" />
+
+    <div class="scenarios-header">
+      <span class="section-label" style="margin-bottom:0;">Margin scenarios</span>
+      <button class="hide-btn" id="toggle-scenarios">Hide</button>
+    </div>
+    <div id="scenarios-section">
+      <div class="scenarios-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Margin %</th><th>Min. sale price</th><th>Max. discount</th><th>Net profit</th>
+            </tr>
+          </thead>
+          <tbody id="scenarios-body"></tbody>
+        </table>
+      </div>
+      <hr class="divider" />
+    </div>
+
+    <div class="explanation">
+      <strong>How it works:</strong>
+      Target net revenue = cost × (1 + margin%). When VAT is on, the customer price = net × (1 + VAT%).
+      Max discount = how much you can cut from your marked price and still hit your target margin.
     </div>
   </div>
 
-  <div class="results">
-    <div class="metric">
-      <div class="metric-label">Min. sale price<br><span id="vat-note" style="font-size:11px;color:#aaa;">(VAT incl.)</span></div>
-      <div class="metric-value blue" id="out-sale">—</div>
+  <!-- ══════════ MULTIPLE ITEMS ══════════ -->
+  <div id="view-bulk" style="display:none;">
+    <div class="bulk-toolbar">
+      <button class="btn primary" onclick="addRow()">+ Add item</button>
+      <button class="btn" onclick="clearAll()">Clear all</button>
+      <button class="btn" onclick="exportCSV()">Export CSV</button>
     </div>
-    <div class="metric">
-      <div class="metric-label">Max. discount to offer</div>
-      <div class="metric-value blue" id="out-disc">—</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Your net profit</div>
-      <div class="metric-value green" id="out-profit">—</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">VAT for gov.</div>
-      <div class="metric-value muted" id="out-vat">—</div>
-    </div>
-  </div>
 
-  <div class="msg-error" id="msg-error"></div>
-
-  <hr class="divider" />
-
-  <div class="scenarios-header">
-    <span class="section-label" style="margin-bottom:0;">Margin scenarios</span>
-    <button class="hide-btn" id="toggle-scenarios">Hide</button>
-  </div>
-  <div id="scenarios-section">
-    <div class="scenarios-wrap">
-      <table>
+    <div class="bulk-table-wrap">
+      <table class="bulk-table" id="bulk-table">
         <thead>
           <tr>
-            <th>Margin %</th>
-            <th>Min. sale price</th>
-            <th>Max. discount</th>
-            <th>Net profit</th>
+            <th style="width:160px;">Item name</th>
+            <th style="width:110px;">Cost</th>
+            <th style="width:100px;">Margin %</th>
+            <th style="width:120px;">Marked price</th>
+            <th style="width:130px;">Min. sale price</th>
+            <th style="width:110px;">Max. discount</th>
+            <th style="width:110px;">Net profit</th>
+            <th style="width:100px;">VAT amount</th>
+            <th style="width:36px;"></th>
           </tr>
         </thead>
-        <tbody id="scenarios-body"></tbody>
+        <tbody id="bulk-body"></tbody>
       </table>
     </div>
-    <hr class="divider" />
-  </div>
 
-  <div class="explanation">
-    <strong>How it works:</strong>
-    Target net revenue = cost × (1 + margin%). When VAT is on, the customer price = net × (1 + VAT%) and you remit the VAT to the government.
-    Max discount = how much you can cut from your marked price and still hit your target margin.
+    <div style="font-size:12px;color:#aaa;margin-top:6px;">
+      Type in any field — results update instantly.
+    </div>
   </div>
 </div>
 
 <footer>Built by Fawzi Atwi &mdash; &copy; 2026</footer>
 
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
   let vatOn = true;
   let currency = 'LBP';
   let scenariosVisible = true;
+  let rowId = 0;
 
   const SCENARIOS = [5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 75, 100];
 
@@ -348,7 +375,8 @@
 
   function withCurr(n) { return currency + ' ' + fmt(n); }
 
-  function calc() {
+  // ── single calc ──
+  function calcSingle() {
     const cost   = parseFloat(document.getElementById('cost').value)   || 0;
     const margin = parseFloat(document.getElementById('margin').value) || 0;
     const marked = parseFloat(document.getElementById('marked').value) || 0;
@@ -359,8 +387,7 @@
     const minSale   = targetNet * (1 + vat);
     const vatAmt    = minSale - targetNet;
     const profit    = targetNet - cost;
-    const discAmt   = marked - minSale;
-    const discPct   = marked > 0 ? (discAmt / marked) * 100 : null;
+    const discPct   = marked > 0 ? ((marked - minSale) / marked) * 100 : null;
 
     document.getElementById('out-sale').textContent   = withCurr(minSale);
     document.getElementById('out-profit').textContent = withCurr(profit);
@@ -371,18 +398,13 @@
     const errEl  = document.getElementById('msg-error');
 
     if (discPct === null) {
-      discEl.textContent = '—';
-      discEl.className = 'metric-value blue';
-      errEl.style.display = 'none';
+      discEl.textContent = '—'; discEl.className = 'metric-value blue'; errEl.style.display = 'none';
     } else if (discPct < 0) {
-      discEl.textContent = '0%';
-      discEl.className = 'metric-value red';
+      discEl.textContent = '0%'; discEl.className = 'metric-value red';
       errEl.style.display = 'block';
       errEl.textContent = `Marked price (${withCurr(marked)}) is below the minimum needed (${withCurr(minSale)}). Raise your marked price or lower the margin.`;
     } else {
-      discEl.textContent = discPct.toFixed(2) + '%';
-      discEl.className = 'metric-value blue';
-      errEl.style.display = 'none';
+      discEl.textContent = discPct.toFixed(2) + '%'; discEl.className = 'metric-value blue'; errEl.style.display = 'none';
     }
 
     const tbody = document.getElementById('scenarios-body');
@@ -393,42 +415,128 @@
       const pft  = net - cost;
       const dPct = marked > 0 ? ((marked - sale) / marked) * 100 : null;
       const isCurrent = m === margin;
-
       const tr = document.createElement('tr');
       if (isCurrent) tr.className = 'current-row';
-
       const discText  = dPct === null ? '—' : dPct < 0 ? '✗ price too low' : dPct.toFixed(2) + '%';
       const discClass = dPct !== null && dPct < 0 ? 'disc tight' : 'disc';
-
-      tr.innerHTML = `
-        <td>${m}%${isCurrent ? ' ← you' : ''}</td>
-        <td>${withCurr(sale)}</td>
-        <td class="${discClass}">${discText}</td>
-        <td>${withCurr(pft)}</td>
-      `;
+      tr.innerHTML = `<td>${m}%${isCurrent ? ' ← you' : ''}</td><td>${withCurr(sale)}</td><td class="${discClass}">${discText}</td><td>${withCurr(pft)}</td>`;
       tbody.appendChild(tr);
     });
   }
 
+  // ── bulk row calc ──
+  function calcRow(id) {
+    const cost   = parseFloat(document.getElementById(`r-cost-${id}`).value)   || 0;
+    const margin = parseFloat(document.getElementById(`r-margin-${id}`).value) || 0;
+    const marked = parseFloat(document.getElementById(`r-marked-${id}`).value) || 0;
+    const vat    = vatRate();
+
+    const targetNet = cost * (1 + margin / 100);
+    const minSale   = targetNet * (1 + vat);
+    const vatAmt    = minSale - targetNet;
+    const profit    = targetNet - cost;
+    const discPct   = marked > 0 ? ((marked - minSale) / marked) * 100 : null;
+
+    document.getElementById(`r-sale-${id}`).textContent   = cost > 0 ? withCurr(minSale) : '—';
+    document.getElementById(`r-profit-${id}`).textContent = cost > 0 ? withCurr(profit)  : '—';
+    document.getElementById(`r-vat-${id}`).textContent    = (cost > 0 && vatOn) ? withCurr(vatAmt) : '—';
+
+    const discEl = document.getElementById(`r-disc-${id}`);
+    if (discPct === null || cost === 0) {
+      discEl.textContent = '—'; discEl.className = 'out-cell blue';
+    } else if (discPct < 0) {
+      discEl.textContent = '✗ too low'; discEl.className = 'out-cell red';
+    } else {
+      discEl.textContent = discPct.toFixed(2) + '%'; discEl.className = 'out-cell blue';
+    }
+  }
+
+  function calcAllRows() {
+    document.querySelectorAll('[data-row-id]').forEach(tr => calcRow(tr.dataset.rowId));
+  }
+
+  function addRow() {
+    const id = ++rowId;
+    const tbody = document.getElementById('bulk-body');
+    const tr = document.createElement('tr');
+    tr.dataset.rowId = id;
+    tr.innerHTML = `
+      <td><input type="text" placeholder="Item name" id="r-name-${id}" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" oninput="calcRow(${id})" /></td>
+      <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" oninput="calcRow(${id})" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" oninput="calcRow(${id})" /></td>
+      <td><span class="out-cell muted" id="r-sale-${id}">—</span></td>
+      <td><span class="out-cell blue" id="r-disc-${id}">—</span></td>
+      <td><span class="out-cell green" id="r-profit-${id}">—</span></td>
+      <td><span class="out-cell muted" id="r-vat-${id}">—</span></td>
+      <td><button class="del-btn" onclick="deleteRow(${id})" title="Remove">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+    document.getElementById(`r-cost-${id}`).focus();
+  }
+
+  function deleteRow(id) {
+    const tr = document.querySelector(`[data-row-id="${id}"]`);
+    if (tr) tr.remove();
+  }
+
+  function clearAll() {
+    if (confirm('Clear all items?')) {
+      document.getElementById('bulk-body').innerHTML = '';
+      rowId = 0;
+    }
+  }
+
+  function exportCSV() {
+    const rows = document.querySelectorAll('[data-row-id]');
+    if (!rows.length) return alert('No items to export.');
+    const lines = ['Item,Cost,Margin %,Marked Price,Min Sale Price,Max Discount,Net Profit,VAT Amount'];
+    rows.forEach(tr => {
+      const id = tr.dataset.rowId;
+      const name   = document.getElementById(`r-name-${id}`).value   || '';
+      const cost   = document.getElementById(`r-cost-${id}`).value   || '';
+      const margin = document.getElementById(`r-margin-${id}`).value || '';
+      const marked = document.getElementById(`r-marked-${id}`).value || '';
+      const sale   = document.getElementById(`r-sale-${id}`).textContent;
+      const disc   = document.getElementById(`r-disc-${id}`).textContent;
+      const profit = document.getElementById(`r-profit-${id}`).textContent;
+      const vat    = document.getElementById(`r-vat-${id}`).textContent;
+      lines.push([name, cost, margin, marked, sale, disc, profit, vat].map(v => `"${v}"`).join(','));
+    });
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'pricing.csv'; a.click();
+  }
+
+  // ── tab switch ──
+  function switchTab(tab) {
+    document.getElementById('view-single').style.display = tab === 'single' ? '' : 'none';
+    document.getElementById('view-bulk').style.display   = tab === 'bulk'   ? '' : 'none';
+    document.getElementById('tab-single').className = 'tab-btn' + (tab === 'single' ? ' active' : '');
+    document.getElementById('tab-bulk').className   = 'tab-btn' + (tab === 'bulk'   ? ' active' : '');
+  }
+
+  // ── VAT toggle ──
   document.getElementById('vat-toggle').addEventListener('click', () => {
     vatOn = !vatOn;
     document.getElementById('vat-switch').className = 'switch' + (vatOn ? ' on' : '');
     document.getElementById('vat-rate').disabled = !vatOn;
     document.getElementById('vat-rate').style.opacity = vatOn ? '1' : '0.4';
-    calc();
+    calcSingle(); calcAllRows();
   });
+  document.getElementById('vat-rate').addEventListener('input', () => { calcSingle(); calcAllRows(); });
 
-  document.getElementById('vat-rate').addEventListener('input', calc);
-
+  // ── currency ──
   document.querySelectorAll('#curr-seg button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#curr-seg button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currency = btn.dataset.curr;
-      calc();
+      calcSingle(); calcAllRows();
     });
   });
 
+  // ── scenarios toggle ──
   document.getElementById('toggle-scenarios').addEventListener('click', () => {
     scenariosVisible = !scenariosVisible;
     document.getElementById('scenarios-section').style.display = scenariosVisible ? '' : 'none';
@@ -436,10 +544,12 @@
   });
 
   ['cost', 'margin', 'marked'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calc);
+    document.getElementById(id).addEventListener('input', calcSingle);
   });
 
-  calc();
+  // start with 3 empty rows in bulk
+  addRow(); addRow(); addRow();
+  calcSingle();
 </script>
 </body>
 </html>
