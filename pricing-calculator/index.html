@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing Calculator</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#185fa5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Pricing" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui,-apple-system,sans-serif; background:#f5f5f3; color:#1a1a1a; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:2rem 1rem; }
+    .card { background:#fff; border-radius:16px; border:0.5px solid #ddd; padding:2rem; width:100%; max-width:1060px; }
+    h1 { font-size:20px; font-weight:500; margin-bottom:4px; }
+    .subtitle { font-size:13px; color:#666; margin-bottom:1.25rem; }
+
+    /* tabs */
+    .tabs { display:flex; border:0.5px solid #ccc; border-radius:8px; overflow:hidden; width:fit-content; margin-bottom:1.25rem; }
+    .tab-btn { padding:7px 20px; font-size:13px; border:none; background:#fafafa; cursor:pointer; color:#555; transition:background .12s,color .12s; }
+    .tab-btn+.tab-btn { border-left:0.5px solid #ccc; }
+    .tab-btn.active { background:#1a1a1a; color:#fff; }
+
+    /* toolbar */
+    .toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:1.25rem; }
+    .toolbar-label { font-size:13px; color:#555; }
+    .seg { display:flex; border:0.5px solid #ccc; border-radius:8px; overflow:hidden; }
+    .seg button { padding:6px 14px; font-size:13px; border:none; background:#fafafa; cursor:pointer; color:#555; transition:background .12s,color .12s; }
+    .seg button+button { border-left:0.5px solid #ccc; }
+    .seg button.active { background:#1a1a1a; color:#fff; }
+    .rate-wrap { display:flex; align-items:center; gap:5px; }
+    .rate-wrap input { width:82px; padding:5px 8px; font-size:13px; border:0.5px solid #ccc; border-radius:8px; outline:none; background:#fafafa; }
+    .rate-wrap input:focus { border-color:#888; background:#fff; }
+    .rate-wrap span { font-size:13px; color:#777; }
+    .vat-group { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .vat-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
+    .vat-toggle-label { font-size:13px; color:#555; }
+    .switch { width:40px; height:22px; border-radius:11px; background:#ccc; position:relative; transition:background .2s; flex-shrink:0; }
+    .switch.on { background:#185fa5; }
+    .switch::after { content:''; position:absolute; width:16px; height:16px; border-radius:50%; background:#fff; top:3px; left:3px; transition:left .2s; }
+    .switch.on::after { left:21px; }
+    .vat-rate-wrap { display:flex; align-items:center; gap:4px; }
+    .vat-rate-wrap input { width:58px; padding:5px 8px; font-size:13px; border:0.5px solid #ccc; border-radius:8px; outline:none; background:#fafafa; }
+    .vat-rate-wrap input:focus { border-color:#888; }
+    .vat-rate-wrap span { font-size:13px; color:#555; }
+    .print-btn { padding:6px 14px; font-size:13px; border:0.5px solid #ccc; border-radius:8px; background:#fafafa; cursor:pointer; color:#555; transition:background .12s; }
+    .print-btn:hover { background:#f0f0f0; }
+    .saved-badge { font-size:11px; color:#3b6d11; background:#eaf3de; padding:3px 10px; border-radius:6px; opacity:0; transition:opacity .4s; }
+    .saved-badge.show { opacity:1; }
+
+    /* single view */
+    .inputs { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:1rem; }
+    label { font-size:13px; color:#555; display:block; margin-bottom:5px; }
+    input[type="number"],input[type="text"] { width:100%; padding:8px 12px; font-size:15px; border:0.5px solid #ccc; border-radius:8px; outline:none; background:#fafafa; transition:border-color .15s; }
+    input[type="number"]:focus,input[type="text"]:focus { border-color:#888; background:#fff; }
+    .results { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:1.25rem; }
+    .metric { background:#f5f5f3; border-radius:8px; padding:14px; }
+    .metric-label { font-size:12px; color:#666; margin-bottom:6px; line-height:1.4; }
+    .metric-value { font-size:21px; font-weight:500; }
+    .metric-value.blue { color:#185fa5; }
+    .metric-value.green { color:#3b6d11; }
+    .metric-value.muted { color:#888; }
+    .metric-value.red { color:#a32d2d; }
+    .metric-secondary { font-size:11px; color:#aaa; margin-top:3px; }
+    .msg-error { font-size:13px; padding:10px 14px; border-radius:8px; margin-bottom:1rem; display:none; line-height:1.5; background:#fcebeb; color:#a32d2d; }
+    .divider { border:none; border-top:0.5px solid #e8e8e8; margin:1.25rem 0; }
+    .section-label { font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#999; }
+    .scenarios-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .hide-btn { font-size:12px; color:#888; background:none; border:0.5px solid #ccc; border-radius:6px; padding:3px 10px; cursor:pointer; transition:background .12s; }
+    .hide-btn:hover { background:#f0f0f0; }
+    .scenarios-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { text-align:left; font-weight:500; font-size:12px; color:#888; padding:6px 10px; border-bottom:0.5px solid #e8e8e8; }
+    td { padding:7px 10px; border-bottom:0.5px solid #f0f0f0; color:#333; vertical-align:middle; }
+    tr.current-row td { background:#f0f5ff; font-weight:500; color:#0c447c; }
+    tr:last-child td { border-bottom:none; }
+    td.disc { color:#185fa5; }
+    td.disc.tight { color:#a32d2d; }
+    .explanation { border-top:0.5px solid #e8e8e8; padding-top:1rem; font-size:13px; color:#666; line-height:1.7; }
+    .explanation strong { color:#1a1a1a; }
+
+    /* bulk view */
+    .bulk-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+    .btn { padding:7px 14px; font-size:13px; border-radius:8px; border:0.5px solid #ccc; background:#fafafa; cursor:pointer; color:#333; transition:background .12s; }
+    .btn:hover { background:#f0f0f0; }
+    .btn.primary { background:#1a1a1a; color:#fff; border-color:#1a1a1a; }
+    .btn.primary:hover { background:#333; }
+    .btn.danger { color:#a32d2d; border-color:#f0b8b8; }
+    .btn.danger:hover { background:#fcebeb; }
+
+    /* search bar */
+    .search-wrap { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+    .search-wrap input { width:220px; padding:6px 12px; font-size:13px; border:0.5px solid #ccc; border-radius:8px; outline:none; background:#fafafa; }
+    .search-wrap input:focus { border-color:#888; background:#fff; }
+    .search-count { font-size:12px; color:#aaa; }
+
+    /* column mapper */
+    .mapper-panel { background:#f0f5ff; border:0.5px solid #b5d4f4; border-radius:12px; padding:1.25rem; margin-bottom:1rem; display:none; }
+    .mapper-panel h3 { font-size:14px; font-weight:500; color:#0c447c; margin-bottom:4px; }
+    .mapper-panel p { font-size:12px; color:#555; margin-bottom:1rem; }
+    .mapper-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:1rem; }
+    .mapper-field label { font-size:12px; color:#444; margin-bottom:4px; display:block; }
+    .mapper-field select { width:100%; padding:6px 8px; font-size:13px; border:0.5px solid #b5d4f4; border-radius:7px; background:#fff; outline:none; }
+    .mapper-preview { font-size:12px; color:#555; background:#fff; border:0.5px solid #b5d4f4; border-radius:8px; padding:10px 12px; margin-bottom:1rem; overflow-x:auto; white-space:nowrap; }
+    .mapper-preview table { font-size:12px; }
+    .mapper-preview td, .mapper-preview th { padding:4px 10px; border:none; border-bottom:0.5px solid #e8e8e8; color:#333; }
+    .mapper-preview th { color:#888; font-weight:500; }
+    .mapper-actions { display:flex; gap:8px; }
+
+    /* bulk table */
+    .bulk-table-wrap { overflow-x:auto; margin-bottom:0; }
+    .bulk-table { width:100%; border-collapse:collapse; font-size:13px; min-width:900px; }
+    .bulk-table thead th { text-align:left; font-weight:500; font-size:11px; color:#999; padding:7px 8px; border-bottom:0.5px solid #e8e8e8; white-space:nowrap; letter-spacing:.03em; text-transform:uppercase; }
+    .bulk-table tbody td { padding:4px 5px; border-bottom:0.5px solid #f5f5f5; vertical-align:middle; }
+    .bulk-table tbody tr:last-child td { border-bottom:none; }
+    .bulk-table tfoot td { padding:8px 8px; border-top:1px solid #e8e8e8; background:#fafafa; font-weight:500; font-size:13px; }
+
+    .bulk-table input[type="text"],
+    .bulk-table input[type="number"] { width:100%; padding:5px 8px; font-size:13px; border:0.5px solid #e8e8e8; border-radius:6px; background:#fafafa; outline:none; }
+    .bulk-table input:focus { border-color:#888; background:#fff; }
+    .notes-input { font-size:12px !important; color:#888; padding:5px 7px !important; }
+    .notes-input::placeholder { color:#ddd; }
+
+    .out-cell { font-size:13px; font-weight:500; padding:4px 8px; white-space:nowrap; display:block; }
+    .out-secondary { font-size:10px; color:#bbb; padding:0 8px 2px; display:block; }
+    .out-cell.blue { color:#185fa5; }
+    .out-cell.green { color:#3b6d11; }
+    .out-cell.muted { color:#888; }
+    .out-cell.red { color:#a32d2d; }
+
+    .row-actions { display:flex; gap:2px; }
+    .icon-btn { background:none; border:none; cursor:pointer; font-size:13px; padding:4px 6px; border-radius:6px; transition:background .12s, color .12s; color:#ccc; }
+    .icon-btn.dup:hover { color:#185fa5; background:#e6f1fb; }
+    .icon-btn.del:hover { color:#a32d2d; background:#fcebeb; }
+
+    /* totals row */
+    .total-label { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:.04em; }
+    .total-val { font-size:13px; font-weight:500; }
+    .total-val.blue { color:#185fa5; }
+    .total-val.green { color:#3b6d11; }
+    .total-val.muted { color:#999; }
+    .total-secondary { font-size:10px; color:#bbb; display:block; }
+
+    footer { margin-top:1.5rem; font-size:12px; color:#bbb; text-align:center; width:100%; max-width:1060px; }
+
+    /* print */
+    @media print {
+      body { background:white; padding:0; }
+      .no-print { display:none !important; }
+      .card { border:none; border-radius:0; padding:.5rem; max-width:100%; }
+      .print-header { display:block !important; margin-bottom:1rem; }
+      footer { display:block; margin-top:1rem; }
+      .bulk-table { min-width:unset; }
+      .bulk-table input { border:none; background:transparent; padding:0; font-size:13px; }
+      .icon-btn { display:none; }
+    }
+    .print-header { display:none; border-bottom:1px solid #ccc; padding-bottom:.75rem; }
+    .print-header h2 { font-size:16px; font-weight:500; }
+    .print-header p { font-size:12px; color:#666; margin-top:2px; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="print-header">
+    <h2>Pricing Calculator</h2>
+    <p>Built by Fawzi Atwi &mdash; Printed <span id="print-date"></span></p>
+  </div>
+
+  <h1 class="no-print">Pricing Calculator</h1>
+  <p class="subtitle no-print">Margin-based pricing with VAT &mdash; built by Fawzi Atwi</p>
+
+  <div class="tabs no-print">
+    <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Single item</button>
+    <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">Multiple items</button>
+  </div>
+
+  <div class="toolbar no-print">
+    <span class="toolbar-label">Currency:</span>
+    <div class="seg" id="curr-seg">
+      <button class="active" data-curr="LBP">LBP</button>
+      <button data-curr="$">$</button>
+      <button data-curr="€">€</button>
+    </div>
+    <div class="rate-wrap">
+      <input type="number" id="exchange-rate" min="1" step="100" value="89500" title="LBP per $1 USD" />
+      <span>LBP / $</span>
+    </div>
+    <div class="vat-group">
+      <div class="vat-toggle" id="vat-toggle">
+        <div class="switch on" id="vat-switch"></div>
+        <span class="vat-toggle-label">VAT</span>
+      </div>
+      <div class="vat-rate-wrap">
+        <input type="number" id="vat-rate" min="0" max="100" step="0.1" value="11" />
+        <span>%</span>
+      </div>
+    </div>
+    <button class="print-btn" onclick="doPrint()">Print / PDF</button>
+    <span class="saved-badge" id="saved-badge">Saved</span>
+  </div>
+
+  <!-- ══ SINGLE ══ -->
+  <div id="view-single">
+    <div class="inputs">
+      <div><label for="cost">Cost price</label><input type="number" id="cost" min="0" step="any" value="100" /></div>
+      <div><label for="margin">Desired margin %</label><input type="number" id="margin" min="0" step="any" value="30" /></div>
+      <div><label for="marked">Marked / full price</label><input type="number" id="marked" min="0" step="any" value="200" /></div>
+    </div>
+    <div class="results">
+      <div class="metric">
+        <div class="metric-label">Min. sale price<br><span id="vat-note" style="font-size:11px;color:#aaa;">(VAT incl.)</span></div>
+        <div class="metric-value blue" id="out-sale">—</div>
+        <div class="metric-secondary" id="out-sale-sec"></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Max. discount to offer</div>
+        <div class="metric-value blue" id="out-disc">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Your net profit</div>
+        <div class="metric-value green" id="out-profit">—</div>
+        <div class="metric-secondary" id="out-profit-sec"></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">VAT for gov.</div>
+        <div class="metric-value muted" id="out-vat">—</div>
+        <div class="metric-secondary" id="out-vat-sec"></div>
+      </div>
+    </div>
+    <div class="msg-error" id="msg-error"></div>
+    <hr class="divider" />
+    <div class="scenarios-header">
+      <span class="section-label">Margin scenarios</span>
+      <button class="hide-btn no-print" id="toggle-scenarios">Hide</button>
+    </div>
+    <div id="scenarios-section">
+      <div class="scenarios-wrap">
+        <table>
+          <thead><tr><th>Margin %</th><th>Min. sale price</th><th>Max. discount</th><th>Net profit</th></tr></thead>
+          <tbody id="scenarios-body"></tbody>
+        </table>
+      </div>
+      <hr class="divider" />
+    </div>
+    <div class="explanation">
+      <strong>How it works:</strong> Target net revenue = cost × (1 + margin%). When VAT is on, the customer price = net × (1 + VAT%). Max discount = how much you can cut from your marked price and still hit your target margin.
+    </div>
+  </div>
+
+  <!-- ══ BULK ══ -->
+  <div id="view-bulk" style="display:none;">
+    <div class="bulk-toolbar no-print">
+      <button class="btn primary" onclick="addRow()">+ Add item</button>
+      <button class="btn" onclick="triggerImport()">Import Excel / CSV</button>
+      <button class="btn" onclick="exportCSV()">Export to Excel</button>
+      <button class="btn danger" onclick="clearAll()">Clear all</button>
+      <input type="file" id="csv-file-input" accept=".csv,.xlsx,.xls" style="display:none;" onchange="importFile(event)" />
+    </div>
+
+    <div class="search-wrap no-print">
+      <input type="text" id="search-bar" placeholder="Search items…" oninput="filterRows(this.value)" />
+      <span class="search-count" id="search-count"></span>
+    </div>
+
+    <!-- smart column mapper -->
+    <div class="mapper-panel no-print" id="mapper-panel">
+      <h3>Smart column mapping</h3>
+      <p id="mapper-msg">We couldn't auto-detect your column layout. Match each field to the right column from your file:</p>
+      <div class="mapper-grid" id="mapper-dropdowns"></div>
+      <div class="mapper-preview" id="mapper-preview-wrap">
+        <div style="font-size:11px;color:#888;margin-bottom:6px;">Preview (first 3 rows)</div>
+        <table id="mapper-preview-table"></table>
+      </div>
+      <div class="mapper-actions">
+        <button class="btn primary" onclick="confirmMapping()">Import with this mapping</button>
+        <button class="btn" onclick="cancelMapping()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="bulk-table-wrap">
+      <table class="bulk-table" id="bulk-table">
+        <thead>
+          <tr>
+            <th style="width:150px;">Item code</th>
+            <th style="width:88px;">Cost</th>
+            <th style="width:78px;">Margin %</th>
+            <th style="width:100px;">Marked price</th>
+            <th style="width:115px;">Min. sale price</th>
+            <th style="width:98px;">Max. discount</th>
+            <th style="width:110px;">Net profit</th>
+            <th style="width:95px;">VAT</th>
+            <th style="width:100px;">Notes</th>
+            <th style="width:56px;" class="no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="bulk-body"></tbody>
+        <tfoot id="bulk-foot" style="display:none;">
+          <tr>
+            <td><span class="total-label">Totals</span></td>
+            <td><span class="total-val muted" id="total-cost">—</span><span class="total-secondary" id="total-cost-sec"></span></td>
+            <td></td>
+            <td></td>
+            <td><span class="total-val blue" id="total-sale">—</span><span class="total-secondary" id="total-sale-sec"></span></td>
+            <td></td>
+            <td><span class="total-val green" id="total-profit">—</span><span class="total-secondary" id="total-profit-sec"></span></td>
+            <td><span class="total-val muted" id="total-vat">—</span><span class="total-secondary" id="total-vat-sec"></span></td>
+            <td></td>
+            <td class="no-print"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>Built by Fawzi Atwi &mdash; &copy; 2026</footer>
+
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
+  let vatOn = true, currency = 'LBP', scenariosVisible = true, rowId = 0, saveTimer = null;
+  let pendingRows = [], pendingHeaders = [];
+  const SCENARIOS = [5,10,15,20,25,30,35,40,50,60,75,100];
+
+  const vatRate      = () => vatOn ? (parseFloat(document.getElementById('vat-rate').value)||0)/100 : 0;
+  const exchangeRate = () => parseFloat(document.getElementById('exchange-rate').value)||89500;
+
+  function fmt(n) {
+    if (currency==='LBP') return n.toLocaleString('en-US',{maximumFractionDigits:0});
+    return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function withCurr(n) { return currency+' '+fmt(n); }
+  function secondary(n) {
+    const r = exchangeRate();
+    if (currency==='LBP') return '$ '+(n/r).toFixed(2);
+    if (currency==='$')   return 'LBP '+Math.round(n*r).toLocaleString('en-US');
+    return '';
+  }
+
+  // ── single ──
+  function calcSingle() {
+    const cost=parseFloat(document.getElementById('cost').value)||0;
+    const margin=parseFloat(document.getElementById('margin').value)||0;
+    const marked=parseFloat(document.getElementById('marked').value)||0;
+    const vat=vatRate();
+    const vatPct=(vat*100).toFixed(1).replace(/\.0$/,'');
+    const targetNet=cost*(1+margin/100);
+    const minSale=targetNet*(1+vat);
+    const vatAmt=minSale-targetNet;
+    const profit=targetNet-cost;
+    const discPct=marked>0?((marked-minSale)/marked)*100:null;
+
+    document.getElementById('out-sale').textContent      = withCurr(minSale);
+    document.getElementById('out-sale-sec').textContent  = secondary(minSale);
+    document.getElementById('out-profit').textContent    = withCurr(profit);
+    document.getElementById('out-profit-sec').textContent= secondary(profit);
+    document.getElementById('out-vat').textContent       = vatOn?withCurr(vatAmt):'—';
+    document.getElementById('out-vat-sec').textContent   = vatOn?secondary(vatAmt):'';
+    document.getElementById('vat-note').textContent      = vatOn?`(VAT ${vatPct}% incl.)`:'(VAT exempt)';
+
+    const discEl=document.getElementById('out-disc');
+    const errEl=document.getElementById('msg-error');
+    if (discPct===null) { discEl.textContent='—'; discEl.className='metric-value blue'; errEl.style.display='none'; }
+    else if (discPct<0) { discEl.textContent='0%'; discEl.className='metric-value red'; errEl.style.display='block'; errEl.textContent=`Marked price (${withCurr(marked)}) is below the minimum needed (${withCurr(minSale)}). Raise your marked price or lower the margin.`; }
+    else { discEl.textContent=discPct.toFixed(2)+'%'; discEl.className='metric-value blue'; errEl.style.display='none'; }
+
+    const tbody=document.getElementById('scenarios-body');
+    tbody.innerHTML='';
+    SCENARIOS.forEach(m=>{
+      const net=cost*(1+m/100), sale=net*(1+vat), pft=net-cost;
+      const dPct=marked>0?((marked-sale)/marked)*100:null;
+      const isCurrent=m===margin;
+      const tr=document.createElement('tr');
+      if (isCurrent) tr.className='current-row';
+      const discText=dPct===null?'—':dPct<0?'✗ price too low':dPct.toFixed(2)+'%';
+      const discClass=dPct!==null&&dPct<0?'disc tight':'disc';
+      tr.innerHTML=`<td>${m}%${isCurrent?' ← you':''}</td><td>${withCurr(sale)}<br><small style="color:#bbb;font-size:11px;">${secondary(sale)}</small></td><td class="${discClass}">${discText}</td><td>${withCurr(pft)}<br><small style="color:#bbb;font-size:11px;">${secondary(pft)}</small></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── bulk row ──
+  function calcRow(id) {
+    const cost=parseFloat(document.getElementById(`r-cost-${id}`).value)||0;
+    const margin=parseFloat(document.getElementById(`r-margin-${id}`).value)||0;
+    const marked=parseFloat(document.getElementById(`r-marked-${id}`).value)||0;
+    const vat=vatRate();
+    const targetNet=cost*(1+margin/100);
+    const minSale=targetNet*(1+vat);
+    const vatAmt=minSale-targetNet;
+    const profit=targetNet-cost;
+    const discPct=marked>0?((marked-minSale)/marked)*100:null;
+
+    const setCell=(sel,val,sec)=>{ document.getElementById(sel).textContent=val; const s=document.getElementById(sel+'-sec'); if(s) s.textContent=sec||''; };
+    setCell(`r-sale-${id}`,cost>0?withCurr(minSale):'—',cost>0?secondary(minSale):'');
+    setCell(`r-profit-${id}`,cost>0?withCurr(profit):'—',cost>0?secondary(profit):'');
+    setCell(`r-vat-${id}`,(cost>0&&vatOn)?withCurr(vatAmt):'—',(cost>0&&vatOn)?secondary(vatAmt):'');
+
+    const discEl=document.getElementById(`r-disc-${id}`);
+    if (discPct===null||cost===0){ discEl.textContent='—'; discEl.className='out-cell blue'; }
+    else if (discPct<0){ discEl.textContent='✗ too low'; discEl.className='out-cell red'; }
+    else { discEl.textContent=discPct.toFixed(2)+'%'; discEl.className='out-cell blue'; }
+
+    updateTotals();
+  }
+
+  function calcAllRows() { document.querySelectorAll('[data-row-id]').forEach(tr=>calcRow(tr.dataset.rowId)); }
+
+  // ── totals ──
+  function updateTotals() {
+    let tCost=0,tSale=0,tProfit=0,tVat=0,count=0;
+    document.querySelectorAll('[data-row-id]').forEach(tr=>{
+      if (tr.style.display==='none') return;
+      const id=tr.dataset.rowId;
+      const cost=parseFloat(document.getElementById(`r-cost-${id}`)?.value)||0;
+      const margin=parseFloat(document.getElementById(`r-margin-${id}`)?.value)||0;
+      const vat=vatRate();
+      const net=cost*(1+margin/100);
+      const sale=net*(1+vat);
+      tCost+=cost; tSale+=sale; tProfit+=net-cost; tVat+=sale-net; count++;
+    });
+    const foot=document.getElementById('bulk-foot');
+    foot.style.display=count>0?'':'none';
+    const setT=(id,val,sec)=>{ document.getElementById(id).textContent=val; const s=document.getElementById(id+'-sec'); if(s) s.textContent=sec||''; };
+    setT('total-cost',  tCost>0?withCurr(tCost):'—',   tCost>0?secondary(tCost):'');
+    setT('total-sale',  tSale>0?withCurr(tSale):'—',   tSale>0?secondary(tSale):'');
+    setT('total-profit',tProfit>0?withCurr(tProfit):'—',tProfit>0?secondary(tProfit):'');
+    setT('total-vat',   (tVat>0&&vatOn)?withCurr(tVat):'—',(tVat>0&&vatOn)?secondary(tVat):'');
+  }
+
+  // ── add row ──
+  function addRow(data) {
+    data=data||{};
+    const id=++rowId;
+    const tbody=document.getElementById('bulk-body');
+    const tr=document.createElement('tr');
+    tr.dataset.rowId=id;
+    tr.innerHTML=`
+      <td><input type="text" placeholder="Item code" id="r-name-${id}" value="${esc(data.name||'')}" oninput="scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${id}" value="${data.cost||''}" oninput="calcRow(${id});scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${id}" value="${data.margin||''}" oninput="calcRow(${id});scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${id}" value="${data.marked||''}" oninput="calcRow(${id});scheduleSave()" /></td>
+      <td><span class="out-cell muted" id="r-sale-${id}">—</span><span class="out-secondary" id="r-sale-${id}-sec"></span></td>
+      <td><span class="out-cell blue" id="r-disc-${id}">—</span></td>
+      <td><span class="out-cell green" id="r-profit-${id}">—</span><span class="out-secondary" id="r-profit-${id}-sec"></span></td>
+      <td><span class="out-cell muted" id="r-vat-${id}">—</span><span class="out-secondary" id="r-vat-${id}-sec"></span></td>
+      <td><input type="text" class="notes-input" placeholder="notes…" id="r-notes-${id}" value="${esc(data.notes||'')}" oninput="scheduleSave()" /></td>
+      <td class="no-print"><div class="row-actions"><button class="icon-btn dup" onclick="duplicateRow(${id})" title="Duplicate">⧉</button><button class="icon-btn del" onclick="deleteRow(${id})" title="Remove">✕</button></div></td>
+    `;
+    tbody.appendChild(tr);
+    if (data.cost||data.margin||data.marked) calcRow(id);
+    return id;
+  }
+
+  function esc(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  function duplicateRow(id) {
+    const data={
+      name:  document.getElementById(`r-name-${id}`)?.value||'',
+      cost:  document.getElementById(`r-cost-${id}`)?.value||'',
+      margin:document.getElementById(`r-margin-${id}`)?.value||'',
+      marked:document.getElementById(`r-marked-${id}`)?.value||'',
+      notes: document.getElementById(`r-notes-${id}`)?.value||''
+    };
+    const currentTr=document.querySelector(`[data-row-id="${id}"]`);
+    const newId=++rowId;
+    const tbody=document.getElementById('bulk-body');
+    const tr=document.createElement('tr');
+    tr.dataset.rowId=newId;
+    tr.innerHTML=`
+      <td><input type="text" placeholder="Item code" id="r-name-${newId}" value="${esc(data.name)}" oninput="scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-cost-${newId}" value="${data.cost}" oninput="calcRow(${newId});scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="30" id="r-margin-${newId}" value="${data.margin}" oninput="calcRow(${newId});scheduleSave()" /></td>
+      <td><input type="number" min="0" step="any" placeholder="0" id="r-marked-${newId}" value="${data.marked}" oninput="calcRow(${newId});scheduleSave()" /></td>
+      <td><span class="out-cell muted" id="r-sale-${newId}">—</span><span class="out-secondary" id="r-sale-${newId}-sec"></span></td>
+      <td><span class="out-cell blue" id="r-disc-${newId}">—</span></td>
+      <td><span class="out-cell green" id="r-profit-${newId}">—</span><span class="out-secondary" id="r-profit-${newId}-sec"></span></td>
+      <td><span class="out-cell muted" id="r-vat-${newId}">—</span><span class="out-secondary" id="r-vat-${newId}-sec"></span></td>
+      <td><input type="text" class="notes-input" placeholder="notes…" id="r-notes-${newId}" value="${esc(data.notes)}" oninput="scheduleSave()" /></td>
+      <td class="no-print"><div class="row-actions"><button class="icon-btn dup" onclick="duplicateRow(${newId})" title="Duplicate">⧉</button><button class="icon-btn del" onclick="deleteRow(${newId})" title="Remove">✕</button></div></td>
+    `;
+    currentTr.insertAdjacentElement('afterend', tr);
+    calcRow(newId);
+    scheduleSave();
+  }
+
+  function deleteRow(id) { const tr=document.querySelector(`[data-row-id="${id}"]`); if(tr){tr.remove();updateTotals();scheduleSave();} }
+
+  function clearAll() { if(confirm('Clear all items?')){ document.getElementById('bulk-body').innerHTML=''; rowId=0; updateTotals(); scheduleSave(); document.getElementById('search-count').textContent=''; } }
+
+  // ── search ──
+  function filterRows(query) {
+    const q=query.toLowerCase().trim();
+    let visible=0,total=0;
+    document.querySelectorAll('[data-row-id]').forEach(tr=>{
+      total++;
+      const id=tr.dataset.rowId;
+      const name=(document.getElementById(`r-name-${id}`)?.value||'').toLowerCase();
+      const notes=(document.getElementById(`r-notes-${id}`)?.value||'').toLowerCase();
+      const show=!q||name.includes(q)||notes.includes(q);
+      tr.style.display=show?'':'none';
+      if(show) visible++;
+    });
+    const cnt=document.getElementById('search-count');
+    cnt.textContent=q?`${visible} of ${total} items`:'';
+    updateTotals();
+  }
+
+  // ── smart column detection ──
+  function detectColumns(headers) {
+    const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,' ').trim();
+    const patterns={
+      name:  ['name','item','product','description','desc','article','sku','label','title','product name','item name','ref','reference','style'],
+      cost:  ['cost','purchase','buy','buying','cp','landed','net cost','cost price','unit cost','prix achat','تكلفة','سعر الشراء'],
+      margin:['margin','gp','gross profit','profit margin','markup','margin%','gp%','profit%','هامش'],
+      marked:['marked','selling','sell','retail','price','market','list','msrp','full price','sale price','sp','prix vente','سعر البيع','سعر']
+    };
+    const score=(header,pats)=>{ const h=norm(header); return pats.reduce((s,p)=>s+(h.includes(norm(p))?p.split(' ').length:0),0); };
+    const fields=['name','cost','margin','marked'];
+    const mapping={};
+    const used=new Set();
+    fields.forEach(field=>{
+      let best=-1,bestScore=0;
+      headers.forEach((h,i)=>{ if(used.has(i)) return; const s=score(h,patterns[field]); if(s>bestScore){best=i;bestScore=s;} });
+      if(best>=0&&bestScore>0){mapping[field]=best;used.add(best);}
+      else mapping[field]=-1;
+    });
+    return mapping;
+  }
+
+  function allDetected(m) { return m.name>=0&&m.cost>=0&&m.margin>=0&&m.marked>=0; }
+
+  // ── import ──
+  function triggerImport() { document.getElementById('csv-file-input').value=''; document.getElementById('csv-file-input').click(); }
+
+  function importFile(event) {
+    const file=event.target.files[0]; if(!file) return;
+    const isXLSX=file.name.endsWith('.xlsx')||file.name.endsWith('.xls');
+    const reader=new FileReader();
+    reader.onload=function(e){
+      let rows=[];
+      if(isXLSX){
+        const wb=XLSX.read(e.target.result,{type:'binary'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      } else {
+        rows=e.target.result.split('\n').map(l=>l.trim()).filter(l=>l).map(l=>l.split(',').map(c=>c.replace(/^"|"$/g,'').trim()));
+      }
+      if(!rows.length) return;
+
+      const firstRow=rows[0].map(String);
+      const hasHeaders=isNaN(parseFloat(firstRow[1]));
+      const headers=hasHeaders?firstRow:firstRow.map((_,i)=>`Column ${i+1}`);
+      const dataRows=hasHeaders?rows.slice(1):rows;
+
+      const mapping=detectColumns(headers);
+
+      if(allDetected(mapping)){
+        const reordered=dataRows.filter(r=>r.some(c=>String(c).trim()));
+        let notice='';
+        const isReordered=mapping.name!==0||mapping.cost!==1||mapping.margin!==2||mapping.marked!==3;
+        processRows(dataRows,mapping);
+        if(isReordered) showNotice(`Columns were in a different order — we auto-mapped them correctly. ${dataRows.length} items imported.`,'ok');
+        else showNotice(`${dataRows.length} items imported successfully.`,'ok');
+      } else {
+        pendingRows=dataRows; pendingHeaders=headers;
+        showMapper(headers,dataRows,mapping);
+      }
+    };
+    if(isXLSX) reader.readAsBinaryString(file);
+    else reader.readAsText(file);
+  }
+
+  function processRows(dataRows,mapping){
+    dataRows.forEach(cols=>{
+      if(!cols[mapping.name]&&!cols[mapping.cost]&&!cols[mapping.margin]&&!cols[mapping.marked]) return;
+      const id=addRow({
+        name:  mapping.name>=0?cols[mapping.name]:'',
+        cost:  mapping.cost>=0?cols[mapping.cost]:'',
+        margin:mapping.margin>=0?cols[mapping.margin]:'',
+        marked:mapping.marked>=0?cols[mapping.marked]:''
+      });
+      calcRow(id);
+    });
+    scheduleSave();
+  }
+
+  function showNotice(msg,type){
+    const panel=document.getElementById('mapper-panel');
+    panel.style.display='block';
+    panel.style.background=type==='ok'?'#eaf3de':'#fcebeb';
+    panel.style.borderColor=type==='ok'?'#c0dd97':'#f0b8b8';
+    document.getElementById('mapper-msg').textContent=msg;
+    document.getElementById('mapper-msg').style.color=type==='ok'?'#3b6d11':'#a32d2d';
+    document.getElementById('mapper-dropdowns').innerHTML='';
+    document.getElementById('mapper-preview-wrap').style.display='none';
+    document.querySelector('.mapper-actions').innerHTML=`<button class="btn" onclick="cancelMapping()">Dismiss</button>`;
+    panel.querySelector('h3').style.display='none';
+  }
+
+  function showMapper(headers,dataRows,mapping){
+    const panel=document.getElementById('mapper-panel');
+    panel.style.display='block';
+    panel.style.background='#f0f5ff';
+    panel.style.borderColor='#b5d4f4';
+    panel.querySelector('h3').style.display='block';
+    document.getElementById('mapper-msg').style.color='#555';
+    document.getElementById('mapper-preview-wrap').style.display='block';
+    document.getElementById('mapper-msg').textContent="We couldn't fully auto-detect your column layout. Please match each field to the right column:";
+
+    const fields=['name','cost','margin','marked'];
+    const fieldLabels={name:'Item name',cost:'Cost',margin:'Margin %',marked:'Marked price'};
+    const grid=document.getElementById('mapper-dropdowns');
+    grid.innerHTML='';
+    fields.forEach(field=>{
+      const div=document.createElement('div'); div.className='mapper-field';
+      const lbl=document.createElement('label'); lbl.textContent=fieldLabels[field]; div.appendChild(lbl);
+      const sel=document.createElement('select'); sel.id=`map-${field}`;
+      const none=document.createElement('option'); none.value='-1'; none.textContent='— not in file —'; sel.appendChild(none);
+      headers.forEach((h,i)=>{ const opt=document.createElement('option'); opt.value=i; opt.textContent=h||(i+1); if(mapping[field]===i) opt.selected=true; sel.appendChild(opt); });
+      div.appendChild(sel); grid.appendChild(div);
+    });
+
+    const preview=document.getElementById('mapper-preview-table');
+    preview.innerHTML='';
+    const headTr=document.createElement('tr');
+    headers.forEach(h=>{ const th=document.createElement('th'); th.textContent=h; headTr.appendChild(th); });
+    preview.appendChild(headTr);
+    dataRows.slice(0,3).forEach(row=>{ const tr=document.createElement('tr'); row.forEach(c=>{ const td=document.createElement('td'); td.textContent=c; tr.appendChild(td); }); preview.appendChild(tr); });
+
+    document.querySelector('.mapper-actions').innerHTML=`<button class="btn primary" onclick="confirmMapping()">Import with this mapping</button><button class="btn" onclick="cancelMapping()">Cancel</button>`;
+  }
+
+  function confirmMapping(){
+    const mapping={
+      name:  parseInt(document.getElementById('map-name')?.value??-1),
+      cost:  parseInt(document.getElementById('map-cost')?.value??-1),
+      margin:parseInt(document.getElementById('map-margin')?.value??-1),
+      marked:parseInt(document.getElementById('map-marked')?.value??-1)
+    };
+    if(pendingRows.length) processRows(pendingRows,mapping);
+    cancelMapping();
+  }
+
+  function cancelMapping(){
+    const panel=document.getElementById('mapper-panel');
+    panel.style.display='none';
+    pendingRows=[]; pendingHeaders=[];
+  }
+
+  // ── export ──
+  function exportCSV(){
+    const rows=document.querySelectorAll('[data-row-id]');
+    if(!rows.length) return alert('No items to export.');
+    const vatPct=(vatRate()*100).toFixed(1).replace(/\.0$/,'');
+    const lines=[`Item,Cost (${currency}),Margin %,Marked Price (${currency}),Min Sale Price (${currency}),Max Discount,Net Profit (${currency}),VAT ${vatPct}% (${currency}),Notes`];
+    rows.forEach(tr=>{
+      const id=tr.dataset.rowId;
+      const g=s=>{ const el=document.getElementById(s); return el?(el.value!==undefined?el.value:el.textContent):''; };
+      lines.push([g(`r-name-${id}`),g(`r-cost-${id}`),g(`r-margin-${id}`),g(`r-marked-${id}`),g(`r-sale-${id}`),g(`r-disc-${id}`),g(`r-profit-${id}`),g(`r-vat-${id}`),g(`r-notes-${id}`)].map(v=>`"${v}"`).join(','));
+    });
+    const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pricing.csv'; a.click();
+  }
+
+  // ── print ──
+  function doPrint(){ document.getElementById('print-date').textContent=new Date().toLocaleDateString(); window.print(); }
+
+  // ── tab switch ──
+  function switchTab(tab){
+    document.getElementById('view-single').style.display=tab==='single'?'':'none';
+    document.getElementById('view-bulk').style.display=tab==='bulk'?'':'none';
+    document.getElementById('tab-single').className='tab-btn'+(tab==='single'?' active':'');
+    document.getElementById('tab-bulk').className='tab-btn'+(tab==='bulk'?' active':'');
+  }
+
+  // ── controls ──
+  document.getElementById('vat-toggle').addEventListener('click',()=>{
+    vatOn=!vatOn;
+    document.getElementById('vat-switch').className='switch'+(vatOn?' on':'');
+    document.getElementById('vat-rate').disabled=!vatOn;
+    document.getElementById('vat-rate').style.opacity=vatOn?'1':'0.4';
+    calcSingle(); calcAllRows(); scheduleSave();
+  });
+  document.getElementById('vat-rate').addEventListener('input',()=>{calcSingle();calcAllRows();scheduleSave();});
+  document.getElementById('exchange-rate').addEventListener('input',()=>{calcSingle();calcAllRows();scheduleSave();});
+  document.querySelectorAll('#curr-seg button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#curr-seg button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active'); currency=btn.dataset.curr;
+      calcSingle(); calcAllRows(); scheduleSave();
+    });
+  });
+  document.getElementById('toggle-scenarios').addEventListener('click',()=>{
+    scenariosVisible=!scenariosVisible;
+    document.getElementById('scenarios-section').style.display=scenariosVisible?'':'none';
+    document.getElementById('toggle-scenarios').textContent=scenariosVisible?'Hide':'Show';
+  });
+  ['cost','margin','marked'].forEach(id=>{ document.getElementById(id).addEventListener('input',()=>{calcSingle();scheduleSave();}); });
+
+  // ── save / load ──
+  function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveSession,600); }
+  function saveSession(){
+    const rows=[];
+    document.querySelectorAll('[data-row-id]').forEach(tr=>{
+      const id=tr.dataset.rowId;
+      rows.push({ name:document.getElementById(`r-name-${id}`)?.value||'', cost:document.getElementById(`r-cost-${id}`)?.value||'', margin:document.getElementById(`r-margin-${id}`)?.value||'', marked:document.getElementById(`r-marked-${id}`)?.value||'', notes:document.getElementById(`r-notes-${id}`)?.value||'' });
+    });
+    try {
+      localStorage.setItem('pricingCalcData',JSON.stringify({ currency, vatOn, vatRateVal:document.getElementById('vat-rate').value, exchangeRate:document.getElementById('exchange-rate').value, singleCost:document.getElementById('cost').value, singleMargin:document.getElementById('margin').value, singleMarked:document.getElementById('marked').value, tab:document.getElementById('tab-bulk').classList.contains('active')?'bulk':'single', rows }));
+      const badge=document.getElementById('saved-badge'); badge.classList.add('show'); setTimeout(()=>badge.classList.remove('show'),1500);
+    } catch(e){}
+  }
+  function loadSession(){
+    try {
+      const raw=localStorage.getItem('pricingCalcData'); if(!raw) return;
+      const data=JSON.parse(raw);
+      if(data.currency){ currency=data.currency; document.querySelectorAll('#curr-seg button').forEach(b=>b.classList.toggle('active',b.dataset.curr===currency)); }
+      if(data.vatOn!==undefined){ vatOn=data.vatOn; document.getElementById('vat-switch').className='switch'+(vatOn?' on':''); document.getElementById('vat-rate').disabled=!vatOn; document.getElementById('vat-rate').style.opacity=vatOn?'1':'0.4'; }
+      if(data.vatRateVal)   document.getElementById('vat-rate').value=data.vatRateVal;
+      if(data.exchangeRate) document.getElementById('exchange-rate').value=data.exchangeRate;
+      if(data.singleCost)   document.getElementById('cost').value=data.singleCost;
+      if(data.singleMargin) document.getElementById('margin').value=data.singleMargin;
+      if(data.singleMarked) document.getElementById('marked').value=data.singleMarked;
+      if(data.rows&&data.rows.length){ document.getElementById('bulk-body').innerHTML=''; rowId=0; data.rows.forEach(r=>{const id=addRow(r);calcRow(id);}); }
+      if(data.tab==='bulk') switchTab('bulk');
+    } catch(e){}
+  }
+
+  loadSession();
+  if(!document.querySelectorAll('[data-row-id]').length){ addRow(); addRow(); addRow(); }
+  calcSingle();
+</script>
+</body>
+</html>
